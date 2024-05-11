@@ -2,6 +2,7 @@ import express, { Express, urlencoded } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
+import errirHandler from "./middleware/ErrorHandler.middleware.js"
 
 
 
@@ -31,4 +32,5 @@ app.use(cookieParser())
 
 
 
+app.use(errirHandler)
 export {app}
