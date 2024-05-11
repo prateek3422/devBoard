@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction, } from "express"
-import ApiError from "../utils/ApiError.js"
+import {ApiError} from "../utils"
 
-const errirHandler = ( err: ApiError,
+const errorHandler = ( err: ApiError,
     req: Request,
     res: Response,
     next: NextFunction) =>{
@@ -15,8 +15,9 @@ const errirHandler = ( err: ApiError,
         message: err.message
     })
 
+
 }
 
 
 
-export default errirHandler
+export { errorHandler}

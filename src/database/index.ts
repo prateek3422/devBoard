@@ -13,4 +13,4 @@ const DBConnection = async () => {
 
 
 
-export default DBConnection
+export { DBConnection}
