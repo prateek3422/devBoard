@@ -2,7 +2,8 @@ import express, { Express, urlencoded } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
-import errirHandler from "./middleware/ErrorHandler.middleware.js"
+import {errorHandler} from "./middleware"
+import { AuthRouter } from "./routes"
 
 
 
@@ -29,8 +30,8 @@ app.use(cookieParser())
 
 
 // TODO routes
+app.use("/api/v1/users", AuthRouter)
 
 
-
-app.use(errirHandler)
+app.use(errorHandler)
 export {app}

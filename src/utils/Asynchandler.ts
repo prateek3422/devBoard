@@ -9,4 +9,4 @@ const asyncHandler = (reqHandler: (req: Request, res: Response, next: NextFuncti
 }
 
 
-export default asyncHandler
+export { asyncHandler}
