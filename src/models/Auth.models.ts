@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
+import { number, string } from "zod";
 
  interface Iuser extends Document {
     fullname : string;
@@ -10,22 +11,21 @@ import bcrypt from "bcryptjs"
     password : string;
     isEmailVerified : boolean;
     LoginType : string;
-    token : string;
+    refreshToken: string;
+    otp:number|undefined
+    emailVerifyOtpExpairy:Date|number|undefined;
+    resetOtp:number|undefined
+    resetOtpExpairy:Date|number|undefined;
     createdAt:Date;
     updatedAt:Date;
-
- }
-
- interface IuserMethod {
-  checkPassword(password: string): Promise<boolean>;
+    checkPassword(password: string): Promise<boolean>;
     CreateAccessToken: () => string
     CreateRefreshToken: () => string
-    
-
  }
 
 
-const userSchema = new Schema({
+
+const userSchema = new Schema<Iuser>({
     fullname: {
       type: String,
       required: true,
@@ -63,8 +63,14 @@ const userSchema = new Schema({
     },
     LoginType: {
       type: String,
+      enum:["email-password", "google", "github"],
+      default: "email-password",
     },
-    token: { type: String },
+    refreshToken: { type: String },
+    otp: { type: Number },
+    emailVerifyOtpExpairy: { type: Date },
+    resetOtp: {type:Number},
+    resetOtpExpairy:{type:Date}
   });
 
   userSchema.pre("save", async function (next) {
@@ -77,16 +83,17 @@ const userSchema = new Schema({
     return await bcrypt.compare(password, this.password);
   };
   
+  
   userSchema.methods.CreateAccessToken =  function () {
     return jwt.sign(
       { _id: this._id, username: this.username, email: this.email },
       process.env.ACCESS_TOKEN as string,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPAIRES }
+      { expiresIn: process.env.ACCESS_EXPAIRY!}
     );
   };
   
   userSchema.methods.CreateRefreshToken =  function () {
-   return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN as string, { expiresIn:process.env.REFRESH_TOKEN_EXPAIRES});
+   return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN as string, { expiresIn: process.env.REFRESH_EXPAIRY!});
   };
   
   // userSchema.methods.temproryOtp = async function () {

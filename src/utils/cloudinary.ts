@@ -15,14 +15,12 @@ const uploadToCloudinary = async (filePath:string) => {
     
     if (!filePath) return null;
     
-    console.log(filePath)
-      
+
       const response = await cloudinary.uploader.upload(filePath, {
         folder: "devBoard",
         resource_type: "auto",
       });
       fs.unlinkSync(filePath);
-      console.log(response)
       return response;
     
   } catch (error) {
