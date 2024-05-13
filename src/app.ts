@@ -5,9 +5,6 @@ import cookieParser from "cookie-parser"
 import {errorHandler} from "./middleware"
 import { AuthRouter } from "./routes"
 
-
-
-
 const app: Express = express()
 
 // * middleware
