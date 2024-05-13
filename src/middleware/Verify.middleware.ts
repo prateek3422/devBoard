@@ -13,14 +13,27 @@ const jwtVerify = async (req:Request, res:Response, next:NextFunction) =>{
 
         }
 
-        const decodedToken = await jwt.verify(token, process.env.JWT_SECRET as string)
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN as string)
 
         if(!decodedToken){
             return next(new ApiError(401,"unauthorized token"))
         }
 
-        // const user = await User.findById({decodedToken._id})
-    } catch (error) {
-        console.log(error)
+        //@ts-ignore
+        const user = await User.findById(decodedToken._id).select("-password -refreshTokens -otp  -emailVerifyOtpExpairy")
+
+        if(!user){
+            return next(new ApiError(401,"Invalid Access Token"))
+        }
+
+        //@ts-ignore
+        req.user = user
+        
+        next()
+    } catch (error:any) {
+        return next(new ApiError(401, error.message || "Invalid Access Token"))
     }
 }
+
+
+export {jwtVerify}

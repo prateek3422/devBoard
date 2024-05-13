@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
 
-interface Imail{
-    email:string
-    subject:string
-    MailgenContent:any
+interface Imail {
+  email: string
+  subject: string
+  MailgenContent: any
 }
-const sendEmail = async ({email, subject,MailgenContent}:Imail) => {
+const sendEmail = async ({ email, subject, MailgenContent }: Imail) => {
   const mailGenerator = new Mailgen({
     theme: "default",
     product: {
@@ -21,12 +21,12 @@ const sendEmail = async ({email, subject,MailgenContent}:Imail) => {
   var emailBody = mailGenerator.generate(MailgenContent);
   var emailText = mailGenerator.generatePlaintext(MailgenContent);
 
-  
+
 
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: 465,
-    secure: true, 
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -35,8 +35,8 @@ const sendEmail = async ({email, subject,MailgenContent}:Imail) => {
 
   const EmailOption = {
     from: `DevBoard ${process.env.EMAIL_USER}`, // sender address
-    to:email, // list of receivers
-    subject:subject, // Subject line
+    to: email, // list of receivers
+    subject: subject, // Subject line
     text: emailText, // plain text body
     html: emailBody, // html body
   };
@@ -51,13 +51,13 @@ const sendEmail = async ({email, subject,MailgenContent}:Imail) => {
 };
 
 
-const SendEmailVerification = (username:string, verifyotp:number) => {
+const SendEmailVerification = (username: string, verifyotp: number) => {
   return {
     body: {
       name: username,
       intro: "Welcome to our app! We're very excited to have you on board.",
       dictionary: {
-        OTP:verifyotp
+        OTP: verifyotp
       },
       outro:
         "Need help, or have questions? Just reply to this email, we'd love to help.",
@@ -66,17 +66,17 @@ const SendEmailVerification = (username:string, verifyotp:number) => {
 };
 
 
-const forgotPassword = (username:string, verifyotp:number) => {
+const forgotPassword = (username: string, verifyotp: number) => {
   return {
     body: {
       name: username,
       intro: "Welcome to our app! We're very excited to have you on board.",
       dictionary: {
-        otp : verifyotp
+        otp: verifyotp
       },
       outro:
         "Need help, or have questions? Just reply to this email, we'd love to help.",
     },
   }
 }
-export { sendEmail , SendEmailVerification, forgotPassword}
+export { sendEmail, SendEmailVerification, forgotPassword }
