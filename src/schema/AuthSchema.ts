@@ -16,6 +16,9 @@ export const signinrSchema = z.object({
 
 })
 
+export const resendEmailSchema = z.object({
+    email: z.string({ required_error: "email is required" }).email({ message: "email is invalid" })
+})
 
 export const verifyOtp = z.object({
     otp: z.number().min(4, "otp minimum 4 digit")

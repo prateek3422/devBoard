@@ -19,7 +19,6 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/helmet": "^4.0.0",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.12.11",
@@ -29,6 +28,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@rohit2005/logger": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",
     "cookie-parser": "^1.4.6",

@@ -3,15 +3,16 @@ dotenv.config({})
 
 import { app } from "./app"
 import {DBConnection} from "./database/index"
+import { logger } from "./logger"
 
 
 
 DBConnection().then(() =>{
-    console.log(`connection successfull`)
+    logger.info(`connection successfull`)
 }).catch( (err:string) =>{
-    console.log(`connection failed`)
+   logger.error("database connection failed")
 })
 
 app.listen(process.env.PORT, () =>{
-    console.log(`your server is running on Port no ${process.env.PORT}`)
+    logger.info(`your server is running on Port no ${process.env.PORT}`)
 })
