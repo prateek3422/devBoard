@@ -3,16 +3,12 @@ import cors from "cors"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import {errorHandler} from "./middleware"
-import { AuthRouter } from "./routes"
+import { AuthRouter, BlogRouter } from "./routes"
 import { logger } from "./logger"
 
 const app: Express = express()
 
 // * middleware
-
-
-
-
 app.use(express.static("public"))
 app.use(express.json({ limit: "1mb" }))
 app.use(urlencoded({ extended: true, limit: "1mb" }))
@@ -31,6 +27,7 @@ app.use(cookieParser())
 
 // TODO routes
 app.use("/api/v1/users", AuthRouter)
+app.use("/api/v1/Blogs", BlogRouter)
 
 
 app.use(errorHandler)

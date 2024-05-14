@@ -78,6 +78,8 @@ const userSchema = new Schema<Iuser>({
 
   refreshToken: { type: String },
   otp: { type: Number },
+},{
+  timestamps:true
 });
 
 userSchema.pre("save", async function (next) {
