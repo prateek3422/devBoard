@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@rohit2005/logger':
+        specifier: ^1.0.1
+        version: 1.0.1
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -135,6 +138,10 @@ packages:
 
   '@pm2/pm2-version-check@1.0.4':
     resolution: {integrity: sha512-SXsM27SGH3yTWKc2fKR4SYNxsmnvuBQ9dd6QHtEWmiZ/VqaOYPAIlS8+vMcn27YLtAEBGvNRSh3TPNvtjZgfqA==}
+
+  '@rohit2005/logger@1.0.1':
+    resolution: {integrity: sha512-lA5I9V7X+4pCChOTA3803C81/kh87tym8xcutV12DnSXfbn8lGCIVAXiFs8aukrJPDHS+0qxDP5nvm/KmrWk9g==}
+    engines: {node: 20.11.0}
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -1575,6 +1582,10 @@ snapshots:
       debug: 4.3.4(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
+
+  '@rohit2005/logger@1.0.1':
+    dependencies:
+      on-finished: 2.4.1
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 

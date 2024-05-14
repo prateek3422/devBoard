@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { changePasswordSchema, forgotPasswordSchema, registerSchema, signinrSchema, updateUserSchema, verifyForgotPasswordSchema, verifyOtp } from "../schema";
+import { changePasswordSchema, forgotPasswordSchema, registerSchema, resendEmailSchema, signinrSchema, updateUserSchema, verifyForgotPasswordSchema, verifyOtp } from "../schema";
 import { ApiError, ApiResponse, asyncHandler, deleteFromCloudinary, uploadToCloudinary } from "../utils";
 import { User } from "../models/Auth.models";
 import { generateOtp } from "../constant";
@@ -42,7 +42,7 @@ const createUser = asyncHandler(async (req: Request, res: Response, next: NextFu
   const isEmail = await User.findOne({ $or: [{ email }, { username }] });
 
   if (isEmail) {
-    throw new ApiError(400, "Email already exists");
+    throw new ApiError(400, "Account already exists");
   }
 
   const files = req.files as {
@@ -137,8 +137,11 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response, next: NextF
 });
 
 const resendEmail = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  //@ts-ignore
-  const user = await User.findById(req?.user?._id)
+
+  const {email} = resendEmailSchema.parse(req.body)
+
+  const user = await User.findOne({email})
+
   if (!user) {
     return next(new ApiError(400, "user not found"));
   }
@@ -174,16 +177,22 @@ const signinUser = asyncHandler(async (req: Request, res: Response, next: NextFu
   if (!user) {
     return next(new ApiError(400, "invalid credentials"));
   }
+
+  if(!user.isEmailVerified){
+    return next(new ApiError(400, "email is not verified"));
+  }
+
   const isMatchPassword = await user.checkPassword(password)
 
   if (!isMatchPassword) {
     return next(new ApiError(400, "invalid credentials"));
   }
 
+
   const { accessToken, refreshToken } = await genrateAccessAndRefreshToken(user.id);
 
   const logedInUser = await User.findById(user._id).select(
-    "-password -refreshTokens -otp  -emailVerifyOtpExpairy"
+    "-password -refreshToken -otp "
   );
 
 
