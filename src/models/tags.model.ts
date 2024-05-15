@@ -1,5 +1,4 @@
 import mongoose, {  Schema } from "mongoose";
-import aggregatePaginate from 'mongoose-aggregate-paginate-v2'
 
 interface Itags extends Document{
     name:string,
@@ -18,6 +17,5 @@ const TagsSchema = new Schema({
 },{timestamps:true})
 
 
-TagsSchema.plugin(aggregatePaginate)
 
 export const Tags = mongoose.model<Itags>("Tags", TagsSchema)

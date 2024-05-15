@@ -16,6 +16,7 @@ interface Iuser extends Document {
   otp: number | undefined
   createdAt: Date;
   updatedAt: Date;
+  
   checkPassword(password: string): Promise<boolean>;
   CreateAccessToken: () => string
   CreateRefreshToken: () => string

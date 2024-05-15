@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import Blogaggregate from "mongoose-aggregate-paginate-v2"
+import { string } from "zod";
+
 
 
 interface Iblog extends Document{
@@ -7,13 +8,14 @@ interface Iblog extends Document{
     title:string
     content:string
     image:object
-    tags:string[]
-    writter:object
+    tags:object
+    author:object
     isPublic:boolean
-
-    aggregatePaginate: (data: any) => Promise<any>;
 }
+
+
 const BlogSchema = new Schema <Iblog>({
+
     name:{
         type:String,
         required:true
@@ -34,15 +36,23 @@ const BlogSchema = new Schema <Iblog>({
         },
         required:true
     },
+    tags:{
+        type:Schema.Types.ObjectId,
+        ref:"Tags",
+    },
     isPublic:{
         required:true,
         type:Boolean,
         default:true
+    },
+    author:{
+        type:Schema.Types.ObjectId,
+        ref:"User"
     }
 },{
     timestamps:true
 })
 
-BlogSchema.plugin(Blogaggregate)
+
 
 export const Blog = mongoose.model<Iblog>("Blog", BlogSchema)

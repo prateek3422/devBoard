@@ -5,43 +5,31 @@ import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
 
 
- const getAllBlogs = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
-    
-    const {limit=1, page=1, shortBy, shortType, query, userId} = req.params
+const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
-    const pipeline = []
-    if(query) pipeline.push({$match: {title: {$regex: query, $options: 'i'}}})
-    if(userId) pipeline.push({$match: {writter: new mongoose.Types.ObjectId(userId)}})
+    const { limit = 1, page = 1, shortBy, shortType, query, userId } = req.params
 
 
-    if(shortBy && shortType){
-        pipeline.push({$sort: {[shortBy]: shortType === "desc" ? -1 : 1}})
-    }
-
-    const blogAggregate = await Blog.aggregate()
-
-
-
-
- })
- const getBlogById = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
+})
+const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     //TODO: aggeregate tags
 
- })
- const createBlog = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
-    const {name, title, content, } = createBlogSchema.parse(req.body)
 
-    const files  = req.files as {[key:string] :Express.Multer.File[]}
-    
+})
+const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { name, title, content } = createBlogSchema.parse(req.body)
+
+    const files = req.files as { [key: string]: Express.Multer.File[] }
+
     const image = files.image[0]?.path
 
-    if(!image){
+    if (!image) {
         return next(new ApiError(400, "image is required"))
     }
 
     const uploadImage = await uploadToCloudinary(image)
 
-    if(!uploadImage){
+    if (!uploadImage) {
         return next(new ApiError(400, "image upload failed"))
     }
 
@@ -49,38 +37,37 @@ import mongoose from "mongoose";
         name,
         title,
         content,
-        image:{
-            url:uploadImage.url,
-            public_id:uploadImage.public_id
+        image: {
+            url: uploadImage.url,
+            public_id: uploadImage.public_id
         },
         //@ts-ignore
-        writter: req.user?._id,
+        tags: req.user?._id, 
+        //@ts-ignore
+        author: req.user?._id,
     })
 
-    if(!blog){
+    if (!blog) {
         return next(new ApiError(400, "blog create failed"))
     }
-
     return res.status(201).json(new ApiResponse(201, blog, "blog created successfully"))
 
 
 })
- const updateBlog = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
+const updateBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
- })
- const DeleteBlogs = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
-
- })
- const toggleBlog = asyncHandler(async (req:Request, res:Response, next:NextFunction) =>{
-
- })
+})
+const DeleteBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+})
+const toggleBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+})
 
 
- export {
-     getAllBlogs,
-     getBlogById,
-     createBlog,
-     updateBlog,
-     DeleteBlogs,
-     toggleBlog
- }
+export {
+    getAllBlogs,
+    getBlogById,
+    createBlog,
+    updateBlog,
+    DeleteBlogs,
+    toggleBlog
+}
