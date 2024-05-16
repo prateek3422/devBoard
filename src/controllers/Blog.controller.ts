@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError, ApiResponse, asyncHandler, uploadToCloudinary } from "../utils";
-import { createBlogSchema, getAllBlog,  } from "../schema";
+import { createBlogSchema, getAllBlog, updateBlogSchema,  } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
 
@@ -163,15 +163,31 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
 
 })
 const updateBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    console.log("hello")
     const {blogId} = req.params
-    // const { name, title, content, tags } = updateBlogSchema.parse(req.body)
+    // console.log(blogId)
+    const { name, title, content, tags } = updateBlogSchema.parse(req.body)
     if(!blogId){
         return next(new ApiError(400, "blogId is required"))
     }
 
     const blog = await Blog.findById(blogId)
 
-    console.log(blog)
+    const updateBlog = await Blog.findByIdAndUpdate(
+       blogId,
+        {
+            $set:{
+                name,
+                title,
+                content,
+                tags: tags||[]
+            }
+        },{
+            new:true
+        }
+    )
+
+    console.log(updateBlog)
 
     // const files = req.files as { [key: string]: Express.Multer.File[] }
     // const image = files.image[0]?.path

@@ -1,6 +1,6 @@
 import Router  from "express"
 import { jwtVerify, upload } from "../middleware"
-import { createBlog, getAllBlogs, getBlogById } from "../controllers"
+import { createBlog, getAllBlogs, getBlogById, updateBlog } from "../controllers"
 
 const router = Router()
 
@@ -18,11 +18,11 @@ router.route("/getBlogById/:BlogId").get(
 )
 
 
-router.route("/update-Blog/:blogId").patch(
+router.route("/:blogId").patch(
     // upload.fields([
     //     { name: "image", maxCount: 1 },
     // ]),    
-    jwtVerify, createBlog)
+    jwtVerify, updateBlog)
 
 
 export {router as BlogRouter}
