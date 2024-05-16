@@ -1,7 +1,9 @@
 // class Apifeature {
-//     query:string,
+//     query:string
+//     querystr:string
 
-//     constructor(query, querystr){
+//     constructor(query:string, querystr:string){
 //         this.query: query
+//         this.querystr: querystr
 //     }
 // }

@@ -37,8 +37,9 @@ const BlogSchema = new Schema <Iblog>({
         required:true
     },
     tags:{
-        type:Schema.Types.ObjectId,
+        type:[Schema.Types.ObjectId],
         ref:"Tags",
+        required:true
     },
     isPublic:{
         required:true,

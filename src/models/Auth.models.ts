@@ -12,7 +12,7 @@ interface Iuser extends Document {
   role: string
   isEmailVerified: boolean;
   LoginType: string;
-  refreshToken: string;
+  refreshToken: string|null;
   otp: number | undefined
   createdAt: Date;
   updatedAt: Date;

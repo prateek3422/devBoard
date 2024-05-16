@@ -1,23 +1,132 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError, ApiResponse, asyncHandler, uploadToCloudinary } from "../utils";
-import { createBlogSchema } from "../schema";
+import { createBlogSchema, getAllBlog,  } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
 
 
 const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { limit = 10, page = 1, shortBy, shortType, query, userId } = req.query
 
-    const { limit = 1, page = 1, shortBy, shortType, query, userId } = req.params
+    const blog = await Blog.aggregate([
+        {
+            $match:
+                query ?
+                    {
+                        title: {
+                            $regex: query,
+                            $options: "i"
+                        }
+                    } : {}
+        },
+        {
+            $sort: {
+                [shortBy as string]: shortType === "asc" ? 1 : -1
+            }
+        },
 
+        {
+            $skip: (parseInt(page as string) - 1) * (parseInt(limit as string))
 
+        },
+        {
+            $limit: (parseInt(limit as string))
+        },
+        {
+            $match:userId? {
+                //@ts-ignore
+                author: new mongoose.Types.ObjectId(userId)
+            }:{}
+        }, 
+        {
+
+            $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author"
+            }
+        },
+        
+        
+    ])
+    if (!blog) {
+        return next(new ApiError(400, "blog not found"))
+    }
+
+    return res.status(200).json(new ApiResponse(200, blog, "get all blogs"))
 })
 const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     //TODO: aggeregate tags
+    const { BlogId } = req.params
 
+    if (!BlogId) {
+        return next(new ApiError(400, "BlogId is required"))
+    }
+
+    const blog = await Blog.aggregate([
+
+        {
+            $match: { author: new mongoose.Types.ObjectId('6646190cf5aa998f6ea019b3') }
+        },
+        {
+            $lookup: {
+                from: "tags",
+                localField: "tags",
+                foreignField: "_id",
+                as: "tags"
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author",
+                pipeline: [
+                    {
+                        $project: {
+                            fullname: 1,
+                            username: 1,
+                            avatar: 1,
+                            createdAt: 1,
+                            updatedAt: 1
+                        }
+                    },
+
+                ]
+            }
+        },
+
+        {
+            $addFields: {
+                author: {
+                    $first: "$author"
+                }
+            },
+
+        },
+        {
+            $addFields: {
+                tags: {
+                    $first: "$tags"
+                }
+            }
+        }
+
+
+
+    ])
+    if (!blog) {
+        return next(new ApiError(400, "Blog not found"))
+    }
+
+    return res.status(200).json(new ApiResponse(200, blog, "Blog by id feched successfully"))
 
 })
 const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, title, content } = createBlogSchema.parse(req.body)
+    const { name, title, content, tags } = createBlogSchema.parse(req.body)
+    console.log(tags)
 
     const files = req.files as { [key: string]: Express.Multer.File[] }
 
@@ -41,6 +150,7 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
             url: uploadImage.url,
             public_id: uploadImage.public_id
         },
+        tags: tags || [],
         //@ts-ignore
         author: req.user?._id,
     })
@@ -53,7 +163,18 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
 
 })
 const updateBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    
+    const {blogId} = req.params
+    // const { name, title, content, tags } = updateBlogSchema.parse(req.body)
+    if(!blogId){
+        return next(new ApiError(400, "blogId is required"))
+    }
+
+    const blog = await Blog.findById(blogId)
+
+    console.log(blog)
+
+    // const files = req.files as { [key: string]: Express.Multer.File[] }
+    // const image = files.image[0]?.path
 
 })
 const DeleteBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
