@@ -12,10 +12,11 @@ interface Iuser extends Document {
   role: string
   isEmailVerified: boolean;
   LoginType: string;
-  refreshToken: string;
+  refreshToken: string|null;
   otp: number | undefined
   createdAt: Date;
   updatedAt: Date;
+  
   checkPassword(password: string): Promise<boolean>;
   CreateAccessToken: () => string
   CreateRefreshToken: () => string
@@ -78,6 +79,8 @@ const userSchema = new Schema<Iuser>({
 
   refreshToken: { type: String },
   otp: { type: Number },
+},{
+  timestamps:true
 });
 
 userSchema.pre("save", async function (next) {

@@ -374,6 +374,12 @@ const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFu
 
 const deleteUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   //@ts-ignore
+  const user = await User.findById(req.user?._id)
+  
+//@ts-ignore
+  deleteFromCloudinary(user?.avatar?.public_id)
+  
+  //@ts-ignore
   await User.findByIdAndDelete(req.user?._id)
   return res.status(200).json(new ApiResponse(200, {}, "user delete successfully"))
 })
