@@ -42,8 +42,6 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
             public_id: uploadImage.public_id
         },
         //@ts-ignore
-        tags: req.user?._id, 
-        //@ts-ignore
         author: req.user?._id,
     })
 
@@ -55,6 +53,7 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
 
 })
 const updateBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    
 
 })
 const DeleteBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
