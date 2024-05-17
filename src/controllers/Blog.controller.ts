@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError, ApiResponse, asyncHandler, uploadToCloudinary } from "../utils";
-import { createBlogSchema, getAllBlog, updateBlogSchema,  } from "../schema";
+import { ApiError, ApiResponse, asyncHandler, deleteFromCloudinary, uploadToCloudinary } from "../utils";
+import { createBlogSchema, getAllBlog, updateBlogSchema, } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
 
@@ -33,11 +33,11 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
             $limit: (parseInt(limit as string))
         },
         {
-            $match:userId? {
+            $match: userId ? {
                 //@ts-ignore
                 author: new mongoose.Types.ObjectId(userId)
-            }:{}
-        }, 
+            } : {}
+        },
         {
 
             $lookup: {
@@ -47,8 +47,8 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
                 as: "author"
             }
         },
-        
-        
+
+
     ])
     if (!blog) {
         return next(new ApiError(400, "blog not found"))
@@ -164,38 +164,97 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
 })
 const updateBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     console.log("hello")
-    const {blogId} = req.params
+    const { blogId } = req.params
     // console.log(blogId)
-    const { name, title, content, tags } = updateBlogSchema.parse(req.body)
-    if(!blogId){
+    const { name, title, content, } = updateBlogSchema.parse(req.body)
+    if (!blogId) {
         return next(new ApiError(400, "blogId is required"))
     }
 
     const blog = await Blog.findById(blogId)
 
+    //* add image and remove image
+    //@ts-ignore
+    deleteFromCloudinary(blog?.image?.public_id)
+    const files = req.files as { [key: string]: Express.Multer.File[] }
+    const image = files.image[0]?.path
+
+    const uploadImage = await uploadToCloudinary(image)
+
+    if (!uploadImage) {
+        return next(new ApiError(400, "image upload failed"))
+    }
     const updateBlog = await Blog.findByIdAndUpdate(
-       blogId,
+        blogId,
         {
-            $set:{
+            $set: {
                 name,
                 title,
                 content,
-                tags: tags||[]
+                image: {
+                    url: uploadImage.url,
+                    public_id: uploadImage.public_id
+                }
             }
-        },{
-            new:true
-        }
+        }, {
+        new: true
+    }
     )
 
-    console.log(updateBlog)
+    if (!updateBlog) {
+        return next(new ApiError(400, "blog update failed"))
+    }
 
-    // const files = req.files as { [key: string]: Express.Multer.File[] }
-    // const image = files.image[0]?.path
+    return res.status(200).json(new ApiResponse(200, updateBlog, "blog updated successfully"))
+
 
 })
 const DeleteBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { blogId } = req.params
+
+    if (!blogId) {
+        return next(new ApiError(400, "blogId is required"))
+    }
+
+    const blog = await Blog.findById(blogId)
+    if (!blog) {
+        return next(new ApiError(400, "blog not found"))
+    }
+    //@ts-ignore
+    deleteFromCloudinary(blog.image?.public_id)
+
+    const deleteBlog = await Blog.findByIdAndDelete(blogId)
+
+    if (!deleteBlog) {
+        return next(new ApiError(400, "blog delete failed"))
+    }
+
+    return res.status(200).json(new ApiResponse(200, {}, "delete blog successfully"))
 })
 const toggleBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { blogId } = req.params
+
+    if (!blogId) {
+        return next(new ApiError(400, "blogId is required"))
+    }
+
+    const blog = await Blog.findById(blogId)
+
+    if (!blog) {
+        return next(new ApiError(400, "blog not found"))
+    }
+
+    const toggleBlog = await Blog.findByIdAndUpdate(blogId, {
+        $set: {
+            isPublic: !blog.isPublic
+        }
+    })
+
+    if (!toggleBlog) {
+        return next(new ApiError(400, "toggle blog failed"))
+    }
+
+    return res.status(200).json(new ApiResponse(200, toggleBlog, "toggle blog successfully"))
 })
 
 

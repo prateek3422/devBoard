@@ -1,10 +1,14 @@
-import Router  from "express"
-import { jwtVerify} from "../middleware"
-import { createTags, } from "../controllers"
+import Router from "express"
+import { jwtVerify } from "../middleware"
+import { createTags, getAllTag, getTagsById, updateTags, } from "../controllers"
 
 const router = Router()
 
+router.route("/getAllTag").get(jwtVerify, getAllTag)
+router.route("/:tagId").get(jwtVerify, getTagsById)
 router.route("/Create-tag").post(jwtVerify, createTags)
 
+router.route("/:tagId").patch(jwtVerify, updateTags).delete(jwtVerify, getTagsById)
 
-export {router as TagRouter}
+
+export { router as TagRouter }
