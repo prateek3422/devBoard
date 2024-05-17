@@ -26,5 +26,5 @@ export const updateBlogSchema = z.object({
     .max(20, { message: "title is too log" }),
     content: z.string({ required_error: "content required true" })
     .min(200, { message: "content must be 3 charector" }),
-    tags: z.array(z.string())
+    // tags: z.array(z.string())
 })
