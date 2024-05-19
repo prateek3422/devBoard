@@ -126,7 +126,6 @@ const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextF
 })
 const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { name, title, content, tags } = createBlogSchema.parse(req.body)
-    console.log(tags)
 
     const files = req.files as { [key: string]: Express.Multer.File[] }
 
