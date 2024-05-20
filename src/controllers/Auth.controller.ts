@@ -35,9 +35,6 @@ const createUser = asyncHandler(async (req: Request, res: Response, next: NextFu
 
   const { fullname, username, email, password } = registerSchema.parse(req.body)
 
-  if (!fullname || !username || !email || !password) {
-    return next(new ApiError(400, "All fields are required"))
-  }
 
   const isEmail = await User.findOne({ $or: [{ email }, { username }] });
 

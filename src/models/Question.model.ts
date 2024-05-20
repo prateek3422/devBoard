@@ -7,6 +7,7 @@ interface Iquestion extends Document {
   description: string;
   answer: object;
   tags: object;
+  owner: object
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,17 +25,19 @@ const QuestionSchema = new Schema<Iquestion>({
     type: String,
     required: true
   },
-  answer: {
+  answer: [{
     type: Schema.Types.ObjectId,
     ref: "Answer",
-    required: true
-  },
-  tags: {
+  }],
+  tags: [{
     type: [Schema.Types.ObjectId],
     ref: "Tags",
-    required: true
-  },
+  }],
 
+  owner:{
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  }
 },
   {
     timestamps: true
