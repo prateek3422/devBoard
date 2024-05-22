@@ -14,15 +14,15 @@ const genrateAccessAndRefreshToken = async (userId: string) => {
   try {
     const user = await User.findById(userId);
 
-    //@ts-ignore
+    if (!user) {
+      throw new ApiError(404, "user not found")
+    }
+
     const accessToken = await user.CreateAccessToken()
-    //@ts-ignore
     const refreshToken = await user.CreateRefreshToken()
 
-    //@ts-ignore
     user.refreshToken = refreshToken
 
-    //@ts-ignore
     await user.save({ validateBeforeSave: false })
 
     return { accessToken, refreshToken };
@@ -135,9 +135,9 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response, next: NextF
 
 const resendEmail = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
-  const {email} = resendEmailSchema.parse(req.body)
+  const { email } = resendEmailSchema.parse(req.body)
 
-  const user = await User.findOne({email})
+  const user = await User.findOne({ email })
 
   if (!user) {
     return next(new ApiError(400, "user not found"));
@@ -175,7 +175,7 @@ const signinUser = asyncHandler(async (req: Request, res: Response, next: NextFu
     return next(new ApiError(400, "invalid credentials"));
   }
 
-  if(!user.isEmailVerified){
+  if (!user.isEmailVerified) {
     return next(new ApiError(400, "email is not verified"));
   }
 
@@ -205,7 +205,6 @@ const signinUser = asyncHandler(async (req: Request, res: Response, next: NextFu
 })
 
 const getCurrentUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  //@ts-ignore
 
   const user = await User.findById(req.user?._id).select("-password -refreshToken")
   return res.status(200).json(new ApiResponse(200, user, "signout successfully"))
@@ -213,7 +212,6 @@ const getCurrentUser = asyncHandler(async (req: Request, res: Response, next: Ne
 
 const signOutUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   await User.findByIdAndUpdate(
-    //@ts-ignore
     req.user?._id,
     {
       $unset: {
@@ -307,7 +305,6 @@ const changePassword = asyncHandler(async (req: Request, res: Response, next: Ne
 
   const { oldPassword, newPassword } = changePasswordSchema.parse(req.body)
 
-  //@ts-ignore
   const user = await User.findById(req.user?._id)
 
   const isMatchPassword = await user?.checkPassword(oldPassword)
@@ -317,25 +314,27 @@ const changePassword = asyncHandler(async (req: Request, res: Response, next: Ne
   if (!isMatchPassword) {
     return next(new ApiError(404, "password not match"))
   }
-  //@ts-ignore
+
+  if (!user) {
+    return next(new ApiError(404, "user not found"))
+  }
+
   user.password = newPassword
-  //@ts-ignore
+
   await user.save({ validateBeforeSave: false })
   return res.status(200).json(new ApiResponse(200, {}, "password change successfully"))
 })
 
 const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { fullname } = updateUserSchema.parse(req.body)
-
-  //@ts-ignore
   const user = await User.findById(req.user?._id)
 
   if (!user) {
     return next(new ApiError(404, "user not found"))
   }
 
-  //@ts-ignore
-  await deleteFromCloudinary(avatar.public_id)
+  // @ts-ignore
+  await deleteFromCloudinary(user?.avatar.public_id)
 
   const files = req.files as {
     [key: string]: Express.Multer.File[];
@@ -350,7 +349,6 @@ const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFu
   }
 
   const updated = await User.findByIdAndUpdate(
-    //@ts-ignore
     req.user?._id,
     {
       fullname,
@@ -370,13 +368,11 @@ const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFu
 })
 
 const deleteUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  //@ts-ignore
   const user = await User.findById(req.user?._id)
-  
-//@ts-ignore
-  deleteFromCloudinary(user?.avatar?.public_id)
-  
+
   //@ts-ignore
+  deleteFromCloudinary(user?.avatar?.public_id)
+
   await User.findByIdAndDelete(req.user?._id)
   return res.status(200).json(new ApiResponse(200, {}, "user delete successfully"))
 })
