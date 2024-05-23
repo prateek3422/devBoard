@@ -2,11 +2,20 @@ import express, { Express, urlencoded } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
-import {errorHandler} from "./middleware"
-import { AuthRouter, BlogRouter, QuestionRoutes, TagRouter } from "./routes"
+import { errorHandler } from "./middleware"
+import { AuthRouter, BlogRouter, QuestionRoutes, TagRouter, AnswerRoutes, LikeRouter } from "./routes"
 import { logger } from "./logger"
 
 const app: Express = express()
+
+
+declare global {
+    namespace Express {
+      interface Request {
+        user?: any;  // Define the type of user appropriately
+      }
+    }
+  }
 
 // * middleware
 app.use(express.static("public"))
@@ -30,7 +39,9 @@ app.use("/api/v1/users", AuthRouter)
 app.use("/api/v1/Blogs", BlogRouter)
 app.use("/api/v1/Tags", TagRouter)
 app.use("/api/v1/Questions", QuestionRoutes)
+app.use("/api/v1/Answers", AnswerRoutes)
+app.use("/api/v1/Likes", LikeRouter)
 
 
 app.use(errorHandler)
-export {app}
+export { app }

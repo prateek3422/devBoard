@@ -5,7 +5,6 @@ interface Iquestion extends Document {
   title: string;
   question: string;
   description: string;
-  answer: object;
   tags: object;
   owner: object
   createdAt: Date;
@@ -25,12 +24,8 @@ const QuestionSchema = new Schema<Iquestion>({
     type: String,
     required: true
   },
-  answer: [{
-    type: Schema.Types.ObjectId,
-    ref: "Answer",
-  }],
   tags: [{
-    type: [Schema.Types.ObjectId],
+    type: Schema.Types.ObjectId,
     ref: "Tags",
   }],
 

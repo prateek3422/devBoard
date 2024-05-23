@@ -7,7 +7,6 @@ const createTags = asyncHandler(async (req: Request, res: Response, next: NextFu
     const { name } = TagsSchema.parse(req.body)
     const tags = await Tags.create({
         name,
-        //@ts-ignore
         owner: req.user.id
     })
     if (!tags) {

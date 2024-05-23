@@ -32,23 +32,8 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
         {
             $limit: (parseInt(limit as string))
         },
-        {
-            $match: userId ? {
-                //@ts-ignore
-                author: new mongoose.Types.ObjectId(userId)
-            } : {}
-        },
-        {
 
-            $lookup: {
-                from: "users",
-                localField: "author",
-                foreignField: "_id",
-                as: "author"
-            }
-        },
-
-
+        // TODO add user
     ])
     if (!blog) {
         return next(new ApiError(400, "blog not found"))
@@ -57,7 +42,6 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
     return res.status(200).json(new ApiResponse(200, blog, "get all blogs"))
 })
 const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    //TODO: aggeregate tags
     const { BlogId } = req.params
 
     if (!BlogId) {
@@ -150,7 +134,6 @@ const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFu
             public_id: uploadImage.public_id
         },
         tags: tags || [],
-        //@ts-ignore
         author: req.user?._id,
     })
 
