@@ -17,29 +17,28 @@ const commentSchema = new Schema<IComment>({
 
     },
 
-    owner: [{
+    owner: {
         type: Schema.Types.ObjectId,
         ref: "User",
-    }],
+    },
 
-    blog: [
+    blog:
         {
             type: Schema.Types.ObjectId,
             ref: "Blog",
         }
-    ],
+    ,
 
-    answer: [
-        {
+    answer: {
             type: Schema.Types.ObjectId,
             ref: "Answer",
         }
-    ],
+    ,
 
-    question: [{
+    question: {
         type: Schema.Types.ObjectId,
         ref: "Question",
-    }]
+    }
 }, { timestamps: true })
 
 
