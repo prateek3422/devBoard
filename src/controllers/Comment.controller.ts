@@ -69,5 +69,13 @@ const addAnswerComment = asyncHandler(async (req: Request, res: Response, next: 
 
 })
 
+const getAllComment  = asyncHandler(async (req:Request,res:Response,next:NextFunction) =>{
+    const {limit=10,page=1} = req.query
+
+    const commnet =  await Comment.aggregate([
+        
+    ])
+})
+
 
 export { AddBlogComment, addQuestionComment, addAnswerComment,}
