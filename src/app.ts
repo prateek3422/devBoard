@@ -3,7 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import { errorHandler } from "./middleware"
-import { AuthRouter, BlogRouter, QuestionRoutes, TagRouter, AnswerRoutes, LikeRouter } from "./routes"
+import { AuthRouter, BlogRouter, QuestionRoutes, TagRouter, AnswerRoutes, LikeRouter, CommentRoutes } from "./routes"
 import { logger } from "./logger"
 
 const app: Express = express()
@@ -41,6 +41,7 @@ app.use("/api/v1/Tags", TagRouter)
 app.use("/api/v1/Questions", QuestionRoutes)
 app.use("/api/v1/Answers", AnswerRoutes)
 app.use("/api/v1/Likes", LikeRouter)
+app.use("/api/v1/Comments", CommentRoutes)
 
 
 app.use(errorHandler)

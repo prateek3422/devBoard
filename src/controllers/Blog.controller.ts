@@ -5,8 +5,11 @@ import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
 
 
+
 const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { limit = 10, page = 1, shortBy, shortType, query, userId } = req.query
+
+    console.log(userId)
 
     const blog = await Blog.aggregate([
         {
@@ -18,6 +21,30 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
                             $options: "i"
                         }
                     } : {}
+        },
+
+        {
+            $match: userId ? {
+                //@ts-ignore
+                author: new mongoose.Types.ObjectId(userId)
+            } : {}
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author",
+                pipeline: [
+                    {
+                        $project: {
+                            fullname: 1,
+                            username: 1,
+                            avatar: 1,
+                        }
+                    }
+                ]
+            }
         },
         {
             $sort: {
@@ -32,9 +59,9 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
         {
             $limit: (parseInt(limit as string))
         },
-
-        // TODO add user
     ])
+
+    console.log(blog)
     if (!blog) {
         return next(new ApiError(400, "blog not found"))
     }
