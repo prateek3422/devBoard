@@ -24,10 +24,12 @@ const QuestionSchema = new Schema<Iquestion>({
     type: String,
     required: true
   },
-  tags: [{
+  tags: [
+    {
     type: Schema.Types.ObjectId,
     ref: "Tags",
-  }],
+  }
+],
 
   owner:{
     type: Schema.Types.ObjectId,

@@ -9,7 +9,6 @@ import mongoose from "mongoose";
 const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { limit = 10, page = 1, shortBy, shortType, query, userId } = req.query
 
-    console.log(userId)
 
     const blog = await Blog.aggregate([
         {
