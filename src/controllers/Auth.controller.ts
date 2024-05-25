@@ -301,6 +301,10 @@ const verifyForgotPassword = asyncHandler(async (req: Request, res: Response, ne
     .json(new ApiResponse(201, user, "Email verified successfully"));
 })
 
+const countCredit = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  
+})
+
 const changePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
   const { oldPassword, newPassword } = changePasswordSchema.parse(req.body)

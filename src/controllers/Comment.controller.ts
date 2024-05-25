@@ -2,19 +2,21 @@ import { NextFunction, Request, Response } from "express"
 import { Comment } from "../models/comment.model"
 import { commentSchema } from "../schema"
 import { ApiError, ApiResponse, asyncHandler } from "../utils"
+import mongoose from "mongoose"
+
 
 
 
 const AddBlogComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { content } = commentSchema.parse(req.body)
-    const { blogId } = req.params
+    const { BlogId } = req.params
 
-    if(!blogId){
+    if (!BlogId) {
         return next(new ApiError(400, "blogId is required"))
     }
     const comment = await Comment.create({
         content,
-        blog: blogId,
+        blog: BlogId,
         owner: req.user.id
     })
     if (!comment) {
@@ -22,21 +24,21 @@ const AddBlogComment = asyncHandler(async (req: Request, res: Response, next: Ne
     }
 
     return res.status(200).json(
-        new ApiResponse(200, comment, " blog comment created successfully")
+        new ApiResponse(200, comment, "Add blog comment successfully")
     )
 })
 
-const addQuestionComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const AddQuestionComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { content } = commentSchema.parse(req.body)
-    const { questionId } = req.params
-    
-    if(!questionId){
+    const { QuestionId } = req.params
+
+    if (!QuestionId) {
         return next(new ApiError(400, "questionId is required"))
     }
 
     const comment = await Comment.create({
         content,
-        question: questionId,
+        question: QuestionId,
         owner: req.user.id
     })
 
@@ -44,30 +46,232 @@ const addQuestionComment = asyncHandler(async (req: Request, res: Response, next
         return next(new ApiError(400, "comment create failed"))
     }
 
-    return res.status(200).json(new ApiResponse(200, comment, "question comment created successfully") )
+    return res.status(200).json(new ApiResponse(200, comment, "Add Question comment  successfully"))
 })
 
-const addAnswerComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const AddAnswerComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { content } = commentSchema.parse(req.body)
-    const { answerId } = req.params
-    
-    if(!answerId){
+    const { AnswerId } = req.params
+
+    if (!AnswerId) {
         return next(new ApiError(400, "answerId is required"))
     }
 
     const comment = await Comment.create({
         content,
-        answer: answerId,
+        answer: AnswerId,
         owner: req.user.id
     })
 
-    if (!comment) { 
+    if (!comment) {
         return next(new ApiError(400, "comment create failed"))
     }
 
-    return res.status(200).json(new ApiResponse(200, comment, "answer comment created successfully") )
+    return res.status(200).json(new ApiResponse(200, comment, "Add Answer comment successfully"))
 
 })
 
+const getAllBlogComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { page = 1, limit = 10 } = req.query
+    const { BlogId } = req.params
+    console.log(BlogId)
 
-export { AddBlogComment, addQuestionComment, addAnswerComment,}
+    if (!BlogId) {
+        return next(new ApiError(400, "blogId is required"))
+    }
+
+    const comment = await Comment.aggregate([
+        {
+            $match: {
+                blog: new mongoose.Types.ObjectId(BlogId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                owner: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: {
+                        url: 1
+                    },
+
+                }
+            }
+        },
+
+
+        {
+            $skip: (parseInt(page as string) - 1) * (parseInt(limit as string))
+
+        },
+        {
+            $limit: (parseInt(limit as string))
+        },
+
+    ])
+
+    return res.status(200).json(new ApiResponse(200, comment, "Add Answer comment successfully"))
+})
+
+const getAllQuestionComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { page = 1, limit = 10 } = req.query
+    const { QuestionId } = req.params
+
+    if (!QuestionId) {
+        return next(new ApiError(400, "QuestionId is required"))
+    }
+
+    const comment = await Comment.aggregate([
+        {
+            $match: {
+                question: new mongoose.Types.ObjectId(QuestionId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                owner: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: {
+                        url: 1
+                    },
+
+                }
+            }
+        },
+        {
+            $skip: (parseInt(page as string) - 1) * (parseInt(limit as string))
+        },
+        {
+            $limit: (parseInt(limit as string))
+        }
+    ])
+
+
+    return res.status(200).json(new ApiResponse(200, comment, "get all question comment successfully"))
+})
+
+const getAllAnswerComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { page = 1, limit = 10 } = req.query
+    const { AnswerId } = req.params
+
+    if (!AnswerId) {
+        return next(new ApiError(400, "AnswerId is required"))
+    }
+
+    const comment = await Comment.aggregate([
+        {
+            $match: {
+                answer: new mongoose.Types.ObjectId(AnswerId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                owner: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: {
+                        url: 1
+                    },
+                }
+            }
+        },
+        {
+            $skip: (parseInt(page as string) - 1) * (parseInt(limit as string))
+        },
+        {
+            $limit: (parseInt(limit as string))
+        }
+    ])
+    return res.status(200).json(new ApiResponse(200, comment, "get all answer comment successfully"))
+})
+
+const updateComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params
+    const { content } = commentSchema.parse(req.body)
+    if (!commentId) {
+        return next(new ApiError(400, "commentId is required"))
+    }
+    const comment = await Comment.findByIdAndUpdate(
+        commentId,
+        { content },
+        { new: true }
+    )
+
+    if (!comment) {
+        return next(new ApiError(400, "comment not found"))
+    }
+
+    return res.status(200).json(new ApiResponse(200, comment, "comment updated successfully"))
+})
+
+const deleteComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params
+    if (!commentId) {
+        return next(new ApiError(400, "commentId is required"))
+    }
+    const comment = await Comment.findByIdAndDelete(commentId)
+    if (!comment) {
+        return next(new ApiError(400, "comment not found"))
+    }
+    return res.status(200).json(new ApiResponse(200, comment, "comment deleted successfully"))
+})
+export {
+    AddBlogComment,
+    AddQuestionComment,
+    AddAnswerComment,
+    getAllBlogComment,
+    getAllQuestionComment,
+    getAllAnswerComment,
+    updateComment,
+    deleteComment
+}
