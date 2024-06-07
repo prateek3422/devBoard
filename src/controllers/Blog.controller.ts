@@ -60,7 +60,6 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
         },
     ])
 
-    console.log(blog)
     if (!blog) {
         return next(new ApiError(400, "blog not found"))
     }
@@ -70,6 +69,7 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
 const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { BlogId } = req.params
 
+
     if (!BlogId) {
         return next(new ApiError(400, "BlogId is required"))
     }
@@ -77,7 +77,7 @@ const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextF
     const blog = await Blog.aggregate([
 
         {
-            $match: { author: new mongoose.Types.ObjectId('6646190cf5aa998f6ea019b3') }
+            $match: { _id: new mongoose.Types.ObjectId(BlogId) }
         },
         {
             $lookup: {
@@ -93,26 +93,30 @@ const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextF
                 localField: "author",
                 foreignField: "_id",
                 as: "author",
-                pipeline: [
-                    {
-                        $project: {
-                            fullname: 1,
-                            username: 1,
-                            avatar: 1,
-                            createdAt: 1,
-                            updatedAt: 1
-                        }
-                    },
-
-                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "blog",
+                as: "comments"
             }
         },
 
         {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "blog",
+                as: "like"
+            }
+        },
+        {
             $addFields: {
                 author: {
                     $first: "$author"
-                }
+                },
             },
 
         },
@@ -121,6 +125,41 @@ const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextF
                 tags: {
                     $first: "$tags"
                 }
+            }
+        },
+        {
+            $addFields: {
+                like: {
+                    $first: "$like"
+                }
+            }
+        },
+        {
+            $addFields: {
+                comments: {
+                    $first: "$comments"
+                }
+            }
+        },
+        {
+            $project:{
+                name:1,
+                title:1,
+                content:1,
+                image:1,
+                isPublic:1,
+                author: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: {
+                        url: 1
+                    },
+                },
+                tags: 1,
+                like: 1,
+                comments: 1,
+                createdAt:1,
+                updatedAt:1
             }
         }
 
@@ -131,7 +170,7 @@ const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextF
         return next(new ApiError(400, "Blog not found"))
     }
 
-    return res.status(200).json(new ApiResponse(200, blog, "Blog by id feched successfully"))
+    return res.status(200).json(new ApiResponse(200, blog[0], "Blog by id feched successfully"))
 
 })
 const createBlog = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
