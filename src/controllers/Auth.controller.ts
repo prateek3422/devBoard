@@ -5,6 +5,7 @@ import { User } from "../models/Auth.models";
 import { generateOtp } from "../constant";
 import jwt from "jsonwebtoken"
 import { sendEmail, SendEmailVerification, } from "../mails/SenMails";
+import mongoose from "mongoose";
 
 
 
@@ -68,16 +69,16 @@ const createUser = asyncHandler(async (req: Request, res: Response, next: NextFu
 
 
 
-  user.otp = generateOtp;
-  const token = await user.generatetokens(generateOtp, user.id)
+  user.otp = generateOtp();
+  const token = await user.generatetokens(generateOtp(), user.id)
 
   await user.save({ validateBeforeSave: false });
 
 
-  sendEmail({
+ await sendEmail({
     email: user.email,
     subject: "Email verification",
-    MailgenContent: SendEmailVerification(user.username, generateOtp),
+    MailgenContent: SendEmailVerification(user.username, generateOtp()),
   });
 
   const createdUser = await User.findById(user._id).select("-password -refreshTokens -otp")
@@ -143,9 +144,9 @@ const resendEmail = asyncHandler(async (req: Request, res: Response, next: NextF
     return next(new ApiError(400, "user not found"));
   }
 
-  user.otp = generateOtp;
+  user.otp = generateOtp();
 
-  const token = await user.generatetokens(generateOtp, user.id)
+  const token = await user.generatetokens(generateOtp(), user.id)
 
   await user.save({ validateBeforeSave: false });
 
@@ -153,7 +154,7 @@ const resendEmail = asyncHandler(async (req: Request, res: Response, next: NextF
   sendEmail({
     email: user.email,
     subject: "Email verification",
-    MailgenContent: SendEmailVerification(user.username, generateOtp),
+    MailgenContent: SendEmailVerification(user.username, generateOtp()),
   });
 
   const options = {
@@ -243,14 +244,14 @@ const forgotPassword = asyncHandler(async (req: Request, res: Response, next: Ne
     return next(new ApiError(400, "user not found"));
   }
 
-  user.otp = generateOtp;
-  const token = await user.generatetokens(generateOtp, user.id)
+  user.otp = generateOtp();
+  const token = await user.generatetokens(generateOtp(), user.id)
   await user.save({ validateBeforeSave: false });
 
   sendEmail({
     email: user.email,
     subject: "Email verification",
-    MailgenContent: SendEmailVerification(user.username, generateOtp),
+    MailgenContent: SendEmailVerification(user.username, generateOtp()),
   });
 
   const option = {
@@ -302,7 +303,15 @@ const verifyForgotPassword = asyncHandler(async (req: Request, res: Response, ne
 })
 
 const countCredit = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  
+
+  const creatdit = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user?._id)
+      }
+    },
+    
+  ])
 })
 
 const changePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
