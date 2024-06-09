@@ -3,6 +3,7 @@ import Router from "express"
 import { jwtVerify, upload } from "../middleware"
 import {
     changePassword,
+    countCredit,
     createUser, deleteUser,
     forgotPassword,
     getCurrentUser,
@@ -12,6 +13,7 @@ import {
     verifyEmail,
     verifyForgotPassword
 } from "../controllers"
+import { get } from "http"
 const router = Router()
 
 
@@ -30,6 +32,8 @@ router.route("/change-password").post(jwtVerify, changePassword)
 router.route("/update-user").patch(upload.fields([
     { name: "avatar", maxCount: 1 } ]),jwtVerify, updateUser)
 router.route("/delete-user").delete(jwtVerify, deleteUser)
+
+router.route("/creadit").get(jwtVerify, countCredit)
 
 
 export { router as AuthRouter }
