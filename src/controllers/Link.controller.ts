@@ -1,14 +1,18 @@
 import { ApiError, ApiResponse, asyncHandler } from "../utils";
 import { NextFunction, Request, Response } from "express"
 import { v4 as uuidv4 } from 'uuid';
-import { Link } from "../models/Like.model";
+import { Link } from "../models/Link.model";
 
 
 
 const createLink = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const {blogId} = req.params
 
     const { originalUrl } = req.body
 
+    if(!blogId){
+        return next(new ApiError(400, "blogId is required"))
+    }
     if (!originalUrl) {
         return next(new ApiError(400, "originalUrl is required"))
     }
@@ -17,7 +21,8 @@ const createLink = asyncHandler(async (req: Request, res: Response, next: NextFu
 
     const link = await Link.create({
         originalUrl,
-        shortUrl
+        shortUrl,
+        blog: blogId
     })
 
     return res.status(200).json(new ApiResponse(200, link, "link created successfully"))

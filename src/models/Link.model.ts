@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 interface ILink extends Document {
     originalUrl: string
     shortUrl: string
-    click: number
+    click: number,
+    blog: object
 }
 
 const LinkSchema = new mongoose.Schema<ILink>({
@@ -19,6 +20,10 @@ const LinkSchema = new mongoose.Schema<ILink>({
     click: {
         type: Number,
         default: 0
+    },
+    blog:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
     }
 
 },
