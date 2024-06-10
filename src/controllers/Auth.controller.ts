@@ -239,6 +239,15 @@ const getCurrentUser = asyncHandler(
   }
 );
 
+const getAllUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = await User.find({});
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "signout successfully"));
+  }
+);
+
 const signOutUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     await User.findByIdAndUpdate(
@@ -345,7 +354,7 @@ const verifyForgotPassword = asyncHandler(
 
 const countCredit = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const creatdit = await User.aggregate([
+    const creadit = await User.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(req.user?._id),
@@ -445,9 +454,20 @@ const countCredit = asyncHandler(
       }
     ]);
 
+     const user = await User.findById(req.user?._id).select(
+      "-password -refreshToken"
+    );
+
+    //@ts-ignore
+    user.creadit = creadit[0].creadit?.totalCreadit
+
+    user?.save({ validateBeforeSave: false });
+
+
+
     return res
       .status(200)
-      .json(new ApiResponse(200, creatdit, "count credit successfully"));
+      .json(new ApiResponse(200, creadit[0], "count credit successfully"));
   }
 );
 

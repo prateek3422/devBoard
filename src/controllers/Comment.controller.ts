@@ -3,6 +3,9 @@ import { Comment } from "../models/comment.model"
 import { commentSchema } from "../schema"
 import { ApiError, ApiResponse, asyncHandler } from "../utils"
 import mongoose from "mongoose"
+import { Answer } from "../models/Answer.model"
+import { Question } from "../models/Question.model"
+import { Blog } from "../models/Blog.models"
 
 
 
@@ -13,6 +16,11 @@ const AddBlogComment = asyncHandler(async (req: Request, res: Response, next: Ne
 
     if (!BlogId) {
         return next(new ApiError(400, "blogId is required"))
+    }
+
+    const blog = await Blog.findById({_id:BlogId})
+    if (!blog) {
+        return next(new ApiError(400, "blog not found"))
     }
     const comment = await Comment.create({
         content,
@@ -36,6 +44,11 @@ const AddQuestionComment = asyncHandler(async (req: Request, res: Response, next
         return next(new ApiError(400, "questionId is required"))
     }
 
+    const question = await Question.findById({_id:QuestionId})
+    if (!question) {
+        return next(new ApiError(400, "question not found"))
+    }
+
     const comment = await Comment.create({
         content,
         question: QuestionId,
@@ -55,6 +68,11 @@ const AddAnswerComment = asyncHandler(async (req: Request, res: Response, next: 
 
     if (!AnswerId) {
         return next(new ApiError(400, "answerId is required"))
+    }
+
+    const answer = await Answer.findById({_id:AnswerId})
+    if (!answer) {
+        return next(new ApiError(400, "answer not found"))
     }
 
     const comment = await Comment.create({

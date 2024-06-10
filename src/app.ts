@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"
 import { errorHandler } from "./middleware"
 import { AuthRouter, BlogRouter, QuestionRoutes, TagRouter, AnswerRoutes, LikeRouter, CommentRoutes, LinkRouter } from "./routes"
 import { logger } from "./logger"
+import { LeaderBoardRouter } from "./routes/LeaderBoard.routes"
 
 const app: Express = express()
 
@@ -43,7 +44,7 @@ app.use("/api/v1/Answers", AnswerRoutes)
 app.use("/api/v1/Likes", LikeRouter)
 app.use("/api/v1/Comments", CommentRoutes)
 app.use("/api/v1/Links", LinkRouter)
-
+app.use("/api/v1/LeaderBoards", LeaderBoardRouter)
 
 app.use(errorHandler)
 export { app }
