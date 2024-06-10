@@ -10,6 +10,7 @@ interface Iuser extends Document {
   email: string;
   password: string;
   role: string
+  creadit: number
   isEmailVerified: boolean;
   LoginType: string;
   refreshToken: string|null;
@@ -71,6 +72,10 @@ const userSchema = new Schema<Iuser>({
     default: false,
   },
 
+  creadit:{
+    type: Number,
+    default: 0
+  },
   LoginType: {
     type: String,
     enum: ["email-password", "google", "github"],

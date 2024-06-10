@@ -69,7 +69,6 @@ const getAllBlogs = asyncHandler(async (req: Request, res: Response, next: NextF
 const getBlogById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { BlogId } = req.params
 
-
     if (!BlogId) {
         return next(new ApiError(400, "BlogId is required"))
     }

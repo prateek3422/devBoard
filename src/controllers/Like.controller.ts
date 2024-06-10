@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import { ApiError, ApiResponse, asyncHandler } from "../utils"
 import { Like } from "../models/Like.models"
+import { Blog } from "../models/Blog.models"
+import { Question } from "../models/Question.model"
+import { Answer } from "../models/Answer.model"
+import { Comment } from "../models/comment.model"
 
 
 
@@ -9,6 +13,11 @@ const toggleBlogLike = asyncHandler(async (req: Request, res: Response, next: Ne
 
     if (!BlogId) {
         return next(new ApiError(400, "BlogId is required"))
+    }
+
+    const blog = await Blog.findById({_id:BlogId})
+    if(!blog){
+        return next(new ApiError(404, "Blog not found"))
     }
 
     const like = await Like.findOne({
@@ -35,6 +44,10 @@ const toggleQuestionLike = asyncHandler(async (req: Request, res: Response, next
 
     if (!QuestionId) {
         return next(new ApiError(400, "questionId is required"))
+    }
+    const question = await Question.findById({_id:QuestionId}) 
+    if(!question){
+        return next(new ApiError(404, "Question not found"))
     }
 
     const like = await Like.findOne({
@@ -65,6 +78,11 @@ const toggleAnswerLike = asyncHandler(async (req: Request, res: Response, next: 
         return next(new ApiError(400, "AnswerId is required"))
     }
 
+    const answer = await Answer.findById({_id:AnswerId})
+    if(!answer){
+        return next(new ApiError(404, "Answer not found"))
+    }
+
     const like  = await Like.findOne({
         owner:req.user?._id,
         answer:AnswerId
@@ -89,6 +107,11 @@ const toggleCommentLike = asyncHandler(async (req: Request, res: Response, next:
 
     if(!CommentId){
         return next(new ApiError(400, "commentId is required"))
+    }
+
+    const comment = await Comment.findById({_id:CommentId})
+    if(!comment){
+        return next(new ApiError(404, "Comment not found"))
     }
 
     const like  =  await Like.findOne({

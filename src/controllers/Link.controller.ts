@@ -2,6 +2,7 @@ import { ApiError, ApiResponse, asyncHandler } from "../utils";
 import { NextFunction, Request, Response } from "express"
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from "../models/Link.model";
+import { Blog } from "../models/Blog.models";
 
 
 
@@ -12,6 +13,10 @@ const createLink = asyncHandler(async (req: Request, res: Response, next: NextFu
 
     if(!blogId){
         return next(new ApiError(400, "blogId is required"))
+    }
+    const blog = await Blog.findOne({_id :blogId})
+    if(!blog){
+        return next(new ApiError(400, "blog not found"))
     }
     if (!originalUrl) {
         return next(new ApiError(400, "originalUrl is required"))
