@@ -177,6 +177,10 @@ const resendEmail = asyncHandler(
       return next(new ApiError(400, "user not found"));
     }
 
+    if (user.isEmailVerified) {
+      return next(new ApiError(400, "email is already verified"));
+    }
+
     user.otp = generateOtp();
 
     const token = await user.generatetokens(user.otp, user.id);
