@@ -52,7 +52,7 @@ export const verifyForgotPasswordSchema = z.object({
   password: z
     .string({ required_error: "password is required" })
     .min(8, { message: "password must be 8 charector" }),
-  otp: z.number().min(4, "otp minimum 4 digit"),
+  otp: z.string().min(4, "otp minimum 4 digit"),
 });
 
 export const changePasswordSchema = z.object({

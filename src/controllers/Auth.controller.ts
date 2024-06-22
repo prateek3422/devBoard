@@ -304,7 +304,7 @@ const forgotPassword = asyncHandler(
     }
 
     user.otp = generateOtp();
-    const token = await user.generatetokens(generateOtp(), user.id);
+    const token = await user.generatetokens(user.otp, user.id);
     await user.save({ validateBeforeSave: false });
 
     sendEmail({
