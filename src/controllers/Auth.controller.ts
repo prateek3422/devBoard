@@ -136,6 +136,8 @@ const verifyEmail = asyncHandler(
       token,
       process.env.OTPSECRET as string
     );
+    console.log(decodedToken);
+
     //@ts-ignore
     if (decodedToken?.otp !== otp) {
       return next(new ApiError(401, "invalid otp"));
@@ -177,7 +179,7 @@ const resendEmail = asyncHandler(
 
     user.otp = generateOtp();
 
-    const token = await user.generatetokens(generateOtp(), user.id);
+    const token = await user.generatetokens(user.otp, user.id);
 
     await user.save({ validateBeforeSave: false });
 
