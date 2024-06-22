@@ -43,6 +43,7 @@ const genrateAccessAndRefreshToken = async (userId: string) => {
     throw new ApiError(500, "Something error while genrating token");
   }
 };
+
 const createUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { fullname, username, email, password } = registerSchema.parse(
@@ -55,18 +56,30 @@ const createUser = asyncHandler(
       throw new ApiError(400, "Account already exists");
     }
 
-    const files = req.files as {
-      [key: string]: Express.Multer.File[];
+    let uploadAvatar = {
+      url: "",
+      public_id: "",
     };
 
-    const localFilePath = files?.avatar[0].path;
+    // @ts-ignore
+    if (req?.files?.avatar?.length > 0) {
+      const files = req.files as {
+        [key: string]: Express.Multer.File[];
+      };
 
-    const uploadAvatar = await uploadToCloudinary(localFilePath);
-    if (!uploadAvatar) {
-      return next(new ApiError(400, "avatar upload failed"));
+      const localFilePath = files?.avatar[0].path;
+
+      const data = await uploadToCloudinary(localFilePath);
+
+      uploadAvatar.public_id = data?.public_id!;
+      uploadAvatar.url = data?.url!;
+
+      if (!uploadAvatar) {
+        return next(new ApiError(400, "avatar upload failed"));
+      }
     }
 
-    const user = await User.create({
+    const user = new User({
       fullname,
       username,
       email,
@@ -78,8 +91,7 @@ const createUser = asyncHandler(
     });
 
     user.otp = generateOtp();
-    const token = await user.generatetokens(generateOtp(), user.id);
-
+    const token = await user.generatetokens(user.otp, user.id);
     await user.save({ validateBeforeSave: false });
 
     await sendEmail({
@@ -392,41 +404,35 @@ const countCredit = asyncHandler(
                 pipeline: [
                   {
                     $project: {
-                      click: 1
-                    }
-                  }
-                ]
+                      click: 1,
+                    },
+                  },
+                ],
               },
             },
             {
               $addFields: {
-                "Comment": {
-                  $multiply: [{ $size: "$Comment" }, 3]
+                Comment: {
+                  $multiply: [{ $size: "$Comment" }, 3],
                 },
-                "likes": {
-                  $size: "$likes"
+                likes: {
+                  $size: "$likes",
                 },
-                "links": {
-                  $multiply: [{ $size: "$links" }, 2]
-                }
-              }
-
+                links: {
+                  $multiply: [{ $size: "$links" }, 2],
+                },
+              },
             },
 
             {
               $project: {
                 totalCreadit: {
                   $sum: {
-                    $add: [
-                      "$Comment",
-                      "$likes",
-                      "$links"
-                    ]
-                  }
+                    $add: ["$Comment", "$likes", "$links"],
+                  },
                 },
-              }
-            }
-
+              },
+            },
           ],
         },
       },
@@ -434,11 +440,9 @@ const countCredit = asyncHandler(
       {
         $addFields: {
           creadit: {
-            $first: "$creadit"
-          }
-
-
-        }
+            $first: "$creadit",
+          },
+        },
       },
 
       {
@@ -448,22 +452,20 @@ const countCredit = asyncHandler(
           username: 1,
           avatar: 1,
           creadit: {
-            totalCreadit: 1
-          }
-        }
-      }
+            totalCreadit: 1,
+          },
+        },
+      },
     ]);
 
-     const user = await User.findById(req.user?._id).select(
+    const user = await User.findById(req.user?._id).select(
       "-password -refreshToken"
     );
 
     //@ts-ignore
-    user.creadit = creadit[0].creadit?.totalCreadit
+    user.creadit = creadit[0].creadit?.totalCreadit;
 
     user?.save({ validateBeforeSave: false });
-
-
 
     return res
       .status(200)
