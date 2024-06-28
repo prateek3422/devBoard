@@ -6,6 +6,7 @@ import {
   getAllBlogs,
   getBlogById,
   toggleBlog,
+  topBlog,
   updateBlog,
 } from "../controllers";
 
@@ -16,6 +17,7 @@ router
   .post(upload.fields([{ name: "image", maxCount: 1 }]), jwtVerify, createBlog);
 
 router.route("/getAllBlog").get(getAllBlogs);
+router.route("/topBlog").get(topBlog);
 
 router.route("/getBlogById/:BlogId").get(getBlogById);
 

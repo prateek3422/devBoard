@@ -9,6 +9,7 @@ import {
 import { createBlogSchema, getAllBlog, updateBlogSchema } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
+import { url } from "inspector";
 
 const getAllBlogs = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -53,6 +54,7 @@ const getAllBlogs = asyncHandler(
                 fullname: 1,
                 username: 1,
                 avatar: 1,
+                creadit: 1,
               },
             },
           ],
@@ -76,19 +78,43 @@ const getAllBlogs = asyncHandler(
           from: "tags",
           localField: "tags",
           foreignField: "_id",
-          as: "tags"
-        }
+          as: "tags",
+        },
       },
-    
+
+      {
+        $addFields: {
+          author: {
+            $first: "$author",
+          },
+        },
+      },
       {
         $addFields: {
           tags: {
-            $first: "$tags"
-          }
-        }
-      }
+            $first: "$tags",
+          },
+        },
+      },
+
+      {
+        $project: {
+          name: 1,
+          title: 1,
+          content: 1,
+          image: {
+            url: 1,
+          },
+          tags: {
+            name: 1,
+          },
+          isPublic: 1,
+          author: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
     ]);
-    console.log(blog)
 
     if (!blog) {
       return next(new ApiError(400, "blog not found"));
@@ -345,6 +371,116 @@ const toggleBlog = asyncHandler(
   }
 );
 
+const topBlog = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { limit = 6, page = 1 } = req.query;
+    const blogs = await Blog.aggregate([
+      {
+        $match: {},
+      },
+
+      {
+        $limit: parseInt(limit as string),
+      },
+      {
+        $skip: (parseInt(page as string) - 1) * parseInt(limit as string),
+      },
+      
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "blog",
+          as: "Comment",
+        },
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "blog",
+          as: "likes",
+        },
+      },
+      {
+        $lookup: {
+          from: "links",
+          localField: "_id",
+          foreignField: "blog",
+          as: "links",
+          pipeline: [
+            {
+              $project: {
+                click: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          Comment: {
+            $multiply: [{ $size: "$Comment" }, 3],
+          },
+          likes: {
+            $size: "$likes",
+          },
+          links: {
+            $multiply: [{ $size: "$links" }, 2],
+          },
+        },
+      },
+
+      {
+        $addFields: {
+          totalCreadit: {
+            $sum: {
+              $add: ["$Comment", "$likes", "$links"],
+            },
+          },
+        },
+        
+      },
+
+      {
+        $sort:{
+          totalCreadit: -1
+        }
+      },
+
+      {
+        $project:{
+          name: 1,
+          title: 1,
+          content: 1,
+          image: {
+            url: 1,
+          },
+          isPublic: 1,
+          author: {
+            fullname: 1,
+            username: 1,
+            avatar: {
+              url:1,
+            },
+          },
+          totalCreadit: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        }
+      }
+    ]);
+
+    if (!blogs) {
+      return next(new ApiError(400, "blogs not found"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, blogs, "get all blogs"));
+  }
+);
+
 export {
   getAllBlogs,
   getBlogById,
@@ -352,4 +488,5 @@ export {
   updateBlog,
   DeleteBlogs,
   toggleBlog,
+  topBlog
 };

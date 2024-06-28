@@ -86,9 +86,12 @@ const getAllQuestion = asyncHandler(
       },
       {
         $addFields: {
-          author: {
-            $first: "$author",
+          owner: {
+            $first: "$owner",
           },
+          tags:{
+            $first: "$tags",
+          }
         },
       },
 
@@ -98,7 +101,9 @@ const getAllQuestion = asyncHandler(
             title: 1,
             question: 1,
             description: 1,
-            tags: 1,
+            tags: {
+              name: 1,
+            },
             owner: {
               fullname: 1,
               username: 1,
@@ -171,6 +176,12 @@ const getQuestionById = asyncHandler(
           owner: {
             $first: "$owner",
           },
+          tags:{
+            $first: "$tags",
+          },
+          answer:{
+            $first: "$answer",
+          }
         },
       },
 
@@ -180,7 +191,9 @@ const getQuestionById = asyncHandler(
           title: 1,
           question: 1,
           description: 1,
-          tags: 1,
+          tags: {
+            name: 1,
+          },
           owner: {
             fullname: 1,
             username: 1,

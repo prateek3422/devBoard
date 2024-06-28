@@ -7,9 +7,9 @@ const router = Router()
 
 
 router.route("/create-question").post(jwtVerify, createQuestion)
-router.route("/getAllQuestions").get(jwtVerify, getAllQuestion)
+router.route("/getAllQuestions").get( getAllQuestion)
 router.route("/:questionId")
-.get(jwtVerify, getQuestionById)
+.get( getQuestionById)
 .patch(jwtVerify, updateQuestion)
 .delete(jwtVerify, deleteQuestion)
 
