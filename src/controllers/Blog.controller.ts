@@ -89,13 +89,6 @@ const getAllBlogs = asyncHandler(
           },
         },
       },
-      {
-        $addFields: {
-          tags: {
-            $first: "$tags",
-          },
-        },
-      },
 
       {
         $project: {
@@ -175,27 +168,7 @@ const getBlogById = asyncHandler(
           },
         },
       },
-      {
-        $addFields: {
-          tags: {
-            $first: "$tags",
-          },
-        },
-      },
-      {
-        $addFields: {
-          like: {
-            $first: "$like",
-          },
-        },
-      },
-      {
-        $addFields: {
-          comments: {
-            $first: "$comments",
-          },
-        },
-      },
+
       {
         $project: {
           name: 1,
@@ -385,7 +358,7 @@ const topBlog = asyncHandler(
       {
         $skip: (parseInt(page as string) - 1) * parseInt(limit as string),
       },
-      
+
       {
         $lookup: {
           from: "comments",
@@ -439,17 +412,16 @@ const topBlog = asyncHandler(
             },
           },
         },
-        
       },
 
       {
-        $sort:{
-          totalCreadit: -1
-        }
+        $sort: {
+          totalCreadit: -1,
+        },
       },
 
       {
-        $project:{
+        $project: {
           name: 1,
           title: 1,
           content: 1,
@@ -461,23 +433,21 @@ const topBlog = asyncHandler(
             fullname: 1,
             username: 1,
             avatar: {
-              url:1,
+              url: 1,
             },
           },
           totalCreadit: 1,
           createdAt: 1,
           updatedAt: 1,
-        }
-      }
+        },
+      },
     ]);
 
     if (!blogs) {
       return next(new ApiError(400, "blogs not found"));
     }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, blogs, "get all blogs"));
+    return res.status(200).json(new ApiResponse(200, blogs, "get all blogs"));
   }
 );
 
@@ -488,5 +458,5 @@ export {
   updateBlog,
   DeleteBlogs,
   toggleBlog,
-  topBlog
+  topBlog,
 };

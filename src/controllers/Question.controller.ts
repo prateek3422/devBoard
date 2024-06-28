@@ -176,12 +176,6 @@ const getQuestionById = asyncHandler(
           owner: {
             $first: "$owner",
           },
-          tags:{
-            $first: "$tags",
-          },
-          answer:{
-            $first: "$answer",
-          }
         },
       },
 
@@ -256,10 +250,31 @@ const deleteQuestion = asyncHandler(
   }
 );
 
+const topQuestion = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { limit = 3 } = req.query;
+    const questions = await Question.aggregate([
+      {
+        $match:{}
+      },
+
+   
+    ]);
+    console.log("hello")
+    if (!questions) {
+      return next(new ApiError(400, "question not found"));
+    }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, questions, "question found successfully"));
+  }
+);
+
 export {
   createQuestion,
   getAllQuestion,
   getQuestionById,
   updateQuestion,
   deleteQuestion,
+  topQuestion
 };

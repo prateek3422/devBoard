@@ -1,6 +1,6 @@
 import Router from "express"
 import { jwtVerify } from "../middleware"
-import { createQuestion, deleteQuestion, getAllQuestion, getQuestionById, updateQuestion } from "../controllers"
+import { createQuestion, deleteQuestion, getAllQuestion, getQuestionById, topQuestion, updateQuestion } from "../controllers"
 
 
 const router = Router()
@@ -8,6 +8,7 @@ const router = Router()
 
 router.route("/create-question").post(jwtVerify, createQuestion)
 router.route("/getAllQuestions").get( getAllQuestion)
+router.route("/TopQuestion").get( topQuestion)
 router.route("/:questionId")
 .get( getQuestionById)
 .patch(jwtVerify, updateQuestion)
