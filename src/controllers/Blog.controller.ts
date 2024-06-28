@@ -150,6 +150,37 @@ const getBlogById = asyncHandler(
           localField: "_id",
           foreignField: "blog",
           as: "comments",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+              },
+            },
+            
+            {
+              $addFields: {
+                owner: {
+                  $first: "$owner",
+                },
+              },
+            },
+           
+            {
+              $project: {
+                content: 1,
+                owner: {
+                  fullname: 1,
+                  username: 1,
+                  avatar: {
+                    url: 1
+                  },
+                },
+              },
+            },
+          ]
         },
       },
 

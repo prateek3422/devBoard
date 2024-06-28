@@ -89,36 +89,32 @@ const getAllQuestion = asyncHandler(
           owner: {
             $first: "$owner",
           },
-          tags:{
+          tags: {
             $first: "$tags",
-          }
+          },
         },
       },
 
       {
-        $project:{
-            _id: 1,
-            title: 1,
-            question: 1,
-            description: 1,
-            tags: {
-              name: 1,
+        $project: {
+          _id: 1,
+          title: 1,
+          question: 1,
+          description: 1,
+          tags: {
+            name: 1,
+          },
+          owner: {
+            fullname: 1,
+            username: 1,
+            avatar: {
+              url: 1,
             },
-            owner: {
-              fullname: 1,
-              username: 1,
-              avatar: {
-                url: 1,
-              },
-            },
-            createdAt: 1,
-            updatedAt: 1,
-        }
-      }
-   
-
-
-  
+          },
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
     ]);
 
     if (!questions) {
@@ -161,7 +157,14 @@ const getQuestionById = asyncHandler(
           as: "tags",
         },
       },
-
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "question",
+          as: "like",
+        },
+      },
       {
         $lookup: {
           from: "answers",
@@ -188,6 +191,7 @@ const getQuestionById = asyncHandler(
           tags: {
             name: 1,
           },
+          like: 1,
           owner: {
             fullname: 1,
             username: 1,
@@ -255,12 +259,18 @@ const topQuestion = asyncHandler(
     const { limit = 3 } = req.query;
     const questions = await Question.aggregate([
       {
-        $match:{}
+        $match: {},
       },
-
-   
+      {
+        $lookup: {
+          from: "likes",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
     ]);
-    console.log("hello")
+    console.log("hello");
     if (!questions) {
       return next(new ApiError(400, "question not found"));
     }
@@ -276,5 +286,5 @@ export {
   getQuestionById,
   updateQuestion,
   deleteQuestion,
-  topQuestion
+  topQuestion,
 };
