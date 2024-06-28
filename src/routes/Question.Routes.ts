@@ -1,6 +1,6 @@
 import Router from "express"
 import { jwtVerify } from "../middleware"
-import { createQuestion, deleteQuestion, getAllQuestion, getQuestionById, topQuestion, updateQuestion } from "../controllers"
+import { createQuestion, deleteQuestion, getAllQuestion, getQuestionById,  updateQuestion } from "../controllers"
 
 
 const router = Router()

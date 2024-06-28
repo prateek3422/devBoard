@@ -9,7 +9,7 @@ import {
 import { createBlogSchema, getAllBlog, updateBlogSchema } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
-import { url } from "inspector";
+
 
 const getAllBlogs = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

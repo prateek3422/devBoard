@@ -257,14 +257,6 @@ const getCurrentUser = asyncHandler(
   }
 );
 
-const getAllUser = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const user = await User.find({});
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "signout successfully"));
-  }
-);
 
 const signOutUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

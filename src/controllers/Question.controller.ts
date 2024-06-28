@@ -254,12 +254,7 @@ const deleteQuestion = asyncHandler(
   }
 );
 
-const topQuestion = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { limit = 3 } = req.query;
 
-    console.log("hello")
-});
 
 export {
   createQuestion,
@@ -267,5 +262,5 @@ export {
   getQuestionById,
   updateQuestion,
   deleteQuestion,
-  topQuestion,
+
 };
