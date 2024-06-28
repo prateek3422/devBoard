@@ -183,7 +183,9 @@ const getBlogById = asyncHandler(
               url: 1,
             },
           },
-          tags: 1,
+          tags: {
+            name: 1,
+          },
           like: 1,
           comments: 1,
           createdAt: 1,
