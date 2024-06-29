@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
     "lint": "tsc",
     "build": "tsc --build",
-    "start": "tsc --build && node --max-old-space-size=216 dist/index.js",
+    "start": "tsc --build && node --max-old-space-size=4096 dist/index.js",
     "start:pm2": "pm2 start dist/index.js",
     "stop": "pm2 stop dist/main.js"
   },
