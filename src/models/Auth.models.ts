@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 interface Iuser extends Document {
-  fullname: string;
-  username: string;
+  Fullname: string;
+  Username: string;
   avatar: object;
   email: string;
   password: string;
@@ -25,14 +25,14 @@ interface Iuser extends Document {
 
 const userSchema = new Schema<Iuser>(
   {
-    fullname: {
+    Fullname: {
       type: String,
       required: true,
       lowercase: true,
       trim: true,
     },
 
-    username: {
+    Username: {
       type: String,
       required: true,
       lowercase: true,

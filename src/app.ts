@@ -13,7 +13,7 @@ import {
   CommentRoutes,
   LinkRouter,
 } from "./routes";
-import { logger } from "./logger";
+
 import { LeaderBoardRouter } from "./routes/LeaderBoard.routes";
 
 const app: Express = express();
@@ -30,10 +30,10 @@ declare global {
 app.use(express.static("public"));
 app.use(express.json({ limit: "1mb" }));
 app.use(urlencoded({ extended: true, limit: "1mb" }));
-app.use(logger.httpExpress);
+
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 204,
     preflightContinue: true,

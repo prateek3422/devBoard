@@ -31,7 +31,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@rohit2005/logger": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",
     "cookie-parser": "^1.4.6",

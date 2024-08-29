@@ -46,11 +46,11 @@ const genrateAccessAndRefreshToken = async (userId: string) => {
 
 const createUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { fullname, username, email, password } = registerSchema.parse(
+    const { Fullname, Username, email, password } = registerSchema.parse(
       req.body
     );
 
-    const isEmail = await User.findOne({ $or: [{ email }, { username }] });
+    const isEmail = await User.findOne({ $or: [{ email }, { Username }] });
 
     if (isEmail) {
       throw new ApiError(400, "Account already exists");
@@ -80,8 +80,8 @@ const createUser = asyncHandler(
     }
 
     const user = new User({
-      fullname,
-      username,
+      Fullname,
+      Username,
       email,
       password,
       avatar: {
@@ -97,7 +97,7 @@ const createUser = asyncHandler(
     await sendEmail({
       email: user.email,
       subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.username, generateOtp()),
+      MailgenContent: SendEmailVerification(user.Username, generateOtp()),
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -119,7 +119,7 @@ const createUser = asyncHandler(
     res
       .status(200)
       .cookie("verifyUser", token, options)
-      .json(new ApiResponse(200, user, "user registerd successfully"));
+      .json(new ApiResponse(200, {}, "user registerd successfully"));
   }
 );
 
@@ -190,7 +190,7 @@ const resendEmail = asyncHandler(
     sendEmail({
       email: user.email,
       subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.username, generateOtp()),
+      MailgenContent: SendEmailVerification(user.Username, generateOtp()),
     });
 
     const options = {
@@ -207,9 +207,9 @@ const resendEmail = asyncHandler(
 
 const signinUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { username, email, password } = signinrSchema.parse(req.body);
+    const { Username, email, password } = signinrSchema.parse(req.body);
 
-    const user = await User.findOne({ $or: [{ email }, { username }] });
+    const user = await User.findOne({ $or: [{ email }, { Username }] });
 
     if (!user) {
       return next(new ApiError(400, "invalid credentials"));
@@ -257,7 +257,6 @@ const getCurrentUser = asyncHandler(
   }
 );
 
-
 const signOutUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     await User.findByIdAndUpdate(
@@ -302,7 +301,7 @@ const forgotPassword = asyncHandler(
     sendEmail({
       email: user.email,
       subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.username, generateOtp()),
+      MailgenContent: SendEmailVerification(user.Username, generateOtp()),
     });
 
     const option = {
@@ -447,7 +446,7 @@ const countCredit = asyncHandler(
         $project: {
           _id: 1,
           fullname: 1,
-          username: 1,
+          Username: 1,
           avatar: 1,
           creadit: {
             totalCreadit: 1,

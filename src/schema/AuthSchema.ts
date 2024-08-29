@@ -1,11 +1,11 @@
 import * as z from "zod";
 
 export const registerSchema = z.object({
-  fullname: z
+  Fullname: z
     .string({ required_error: "name required true" })
     .min(3, { message: "fullname must be 3 charector" })
     .max(20, { message: "full name is too log" }),
-  username: z
+  Username: z
     .string({ required_error: "user name is required" })
     .min(3, { message: "usename must be 3 charector" })
     .max(10, "username is too long"),
@@ -18,7 +18,7 @@ export const registerSchema = z.object({
 });
 
 export const signinrSchema = z.object({
-  username: z
+  Username: z
     .string({ required_error: "user name is required" })
     .min(3, { message: "usename must be 3 charector" })
     .max(10, "username is too long")
