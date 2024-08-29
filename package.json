@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
     "lint": "tsc",
-    "build": "rm -rf dist & tsc -p tsconfig.json && tsc-alias",
-    "start": "pnpm build && node dist/server.js"
+    "build": "rm -rf dist & tsc -p tsconfig.json",
+    "start": "npm build && node dist/server.js"
   },
   "keywords": [],
   "author": "",
