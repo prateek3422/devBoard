@@ -6,10 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
     "lint": "tsc",
-    "build": "tsc --build",
-    "start": "tsc --build && node --max-old-space-size=4096 dist/index.js",
-    "start:pm2": "pm2 start dist/index.js",
-    "stop": "pm2 stop dist/main.js"
+    "build": "rm -rf dist & tsc -p tsconfig.json && tsc-alias",
+    "start": "pnpm build && node dist/server.js"
   },
   "keywords": [],
   "author": "",
