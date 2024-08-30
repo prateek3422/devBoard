@@ -1,13 +1,13 @@
 {
-  "name": "Dev-Board-Server",
+  "name": "DevWave",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
     "lint": "tsc",
-    "build": "rm -rf dist & tsc -p tsconfig.json && npm ci",
-    "start": "npm build && node dist/index.js"
+    "build": "tsc -p tsconfig.json",
+    "start": "ts-node ./src/index.ts"
   },
   "keywords": [],
   "author": "",
