@@ -9,7 +9,8 @@ import {
 import { createBlogSchema, getAllBlog, updateBlogSchema } from "../schema";
 import { Blog } from "../models/Blog.models";
 import mongoose from "mongoose";
-
+import slugify from "slugify";
+import crypto from "crypto";
 
 const getAllBlogs = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -93,6 +94,7 @@ const getAllBlogs = asyncHandler(
       {
         $project: {
           name: 1,
+          slug: 1,
           title: 1,
           content: 1,
           image: {
@@ -118,15 +120,15 @@ const getAllBlogs = asyncHandler(
 );
 const getBlogById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { BlogId } = req.params;
+    const { slug } = req.params;
 
-    if (!BlogId) {
-      return next(new ApiError(400, "BlogId is required"));
+    if (!slug) {
+      return next(new ApiError(400, "slug is required"));
     }
 
     const blog = await Blog.aggregate([
       {
-        $match: { _id: new mongoose.Types.ObjectId(BlogId) },
+        $match: { slug: slug },
       },
       {
         $lookup: {
@@ -159,7 +161,7 @@ const getBlogById = asyncHandler(
                 as: "owner",
               },
             },
-            
+
             {
               $addFields: {
                 owner: {
@@ -167,7 +169,7 @@ const getBlogById = asyncHandler(
                 },
               },
             },
-           
+
             {
               $project: {
                 content: 1,
@@ -175,12 +177,12 @@ const getBlogById = asyncHandler(
                   fullname: 1,
                   username: 1,
                   avatar: {
-                    url: 1
+                    url: 1,
                   },
                 },
               },
             },
-          ]
+          ],
         },
       },
 
@@ -235,12 +237,14 @@ const getBlogById = asyncHandler(
 );
 const createBlog = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, title, content, tags } = createBlogSchema.parse(req.body);
-
+    const { title, content, tags } = createBlogSchema.parse(req.body);
     const files = req.files as { [key: string]: Express.Multer.File[] };
+    const Slug =
+      slugify(title, { lower: true }) +
+      "-" +
+      crypto.randomBytes(8).toString("hex");
 
     const image = files.image[0]?.path;
-
     if (!image) {
       return next(new ApiError(400, "image is required"));
     }
@@ -252,7 +256,7 @@ const createBlog = asyncHandler(
     }
 
     const blog = await Blog.create({
-      name,
+      slug: Slug,
       title,
       content,
       image: {
@@ -273,7 +277,6 @@ const createBlog = asyncHandler(
 );
 const updateBlog = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("hello");
     const { blogId } = req.params;
     // console.log(blogId)
     const { name, title, content } = updateBlogSchema.parse(req.body);

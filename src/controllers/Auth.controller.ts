@@ -136,7 +136,6 @@ const verifyEmail = asyncHandler(
       token,
       process.env.OTPSECRET as string
     );
-    console.log(decodedToken);
 
     //@ts-ignore
     if (decodedToken?.otp !== otp) {
@@ -477,8 +476,6 @@ const changePassword = asyncHandler(
     const user = await User.findById(req.user?._id);
 
     const isMatchPassword = await user?.checkPassword(oldPassword);
-
-    console.log(isMatchPassword);
 
     if (!isMatchPassword) {
       return next(new ApiError(404, "password not match"));

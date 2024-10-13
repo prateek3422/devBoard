@@ -17,9 +17,8 @@ router
   .post(upload.fields([{ name: "image", maxCount: 1 }]), jwtVerify, createBlog);
 
 router.route("/getAllBlog").get(getAllBlogs);
-router.route("/topBlog").get(topBlog);
 
-router.route("/getBlogById/:BlogId").get(getBlogById);
+router.route("/getBlogById/:slug").get(getBlogById);
 
 router
   .route("/:blogId")
