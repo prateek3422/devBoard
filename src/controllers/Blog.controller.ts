@@ -210,8 +210,9 @@ const getBlogById = asyncHandler(
           image: 1,
           isPublic: 1,
           author: {
-            fullname: 1,
-            username: 1,
+            _id: 1,
+            Fullname: 1,
+            Username: 1,
             avatar: {
               url: 1,
             },

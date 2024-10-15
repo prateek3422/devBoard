@@ -3,17 +3,21 @@ import { QuestionSchema } from "../schema";
 import { ApiError, ApiResponse, asyncHandler } from "../utils";
 import { Question } from "../models/Question.model";
 import mongoose from "mongoose";
+import slugify from "slugify";
+import crypto from "crypto";
 
 const createQuestion = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { title, question, description, tags } = QuestionSchema.parse(
-      req.body
-    );
+    const { title, question, tags } = QuestionSchema.parse(req.body);
+    const slug =
+      slugify(title, { lower: true }) +
+      "-" +
+      crypto.randomBytes(6).toString("hex");
 
     const questions = await Question.create({
       title,
+      slug,
       question,
-      description,
       tags,
       owner: req.user?._id,
     });
@@ -62,8 +66,7 @@ const getAllQuestion = asyncHandler(
       {
         $match: userId
           ? {
-              //@ts-ignore
-              author: new mongoose.Types.ObjectId(userId),
+              author: new mongoose.Types.ObjectId(userId as string),
             }
           : {},
       },
@@ -89,9 +92,6 @@ const getAllQuestion = asyncHandler(
           owner: {
             $first: "$owner",
           },
-          tags: {
-            $first: "$tags",
-          },
         },
       },
 
@@ -99,14 +99,13 @@ const getAllQuestion = asyncHandler(
         $project: {
           _id: 1,
           title: 1,
+          slug: 1,
           question: 1,
           description: 1,
-          tags: {
-            name: 1,
-          },
+          tags: 1,
           owner: {
-            fullname: 1,
-            username: 1,
+            Fullname: 1,
+            Username: 1,
             avatar: {
               url: 1,
             },
@@ -129,16 +128,22 @@ const getAllQuestion = asyncHandler(
 
 const getQuestionById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { questionId } = req.params;
+    const { slug } = req.params;
 
-    if (!questionId) {
+    if (!slug) {
+      return next(new ApiError(400, "question not found"));
+    }
+
+    const isSlugExist = await Question.findOne({ slug });
+
+    if (!isSlugExist) {
       return next(new ApiError(400, "question not found"));
     }
 
     const question = await Question.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(questionId),
+          slug: slug,
         },
       },
       {
@@ -210,22 +215,19 @@ const getQuestionById = asyncHandler(
     }
     return res
       .status(200)
-      .json(new ApiResponse(200, question, "question found successfully"));
+      .json(new ApiResponse(200, question[0], "question found successfully"));
   }
 );
 const updateQuestion = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { questionId } = req.params;
 
-    const { title, question, description, tags } = QuestionSchema.parse(
-      req.body
-    );
+    const { title, question, tags } = QuestionSchema.parse(req.body);
     const questions = await Question.findByIdAndUpdate(
       questionId,
       {
         title,
         question,
-        description,
         tags,
       },
       {
@@ -254,13 +256,10 @@ const deleteQuestion = asyncHandler(
   }
 );
 
-
-
 export {
   createQuestion,
   getAllQuestion,
   getQuestionById,
   updateQuestion,
   deleteQuestion,
-
 };
