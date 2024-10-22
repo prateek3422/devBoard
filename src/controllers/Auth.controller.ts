@@ -97,7 +97,7 @@ const createUser = asyncHandler(
     await sendEmail({
       email: user.email,
       subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.Username, generateOtp()),
+      MailgenContent: SendEmailVerification(user.Username, user.otp),
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -189,7 +189,7 @@ const resendEmail = asyncHandler(
     sendEmail({
       email: user.email,
       subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.Username, generateOtp()),
+      MailgenContent: SendEmailVerification(user.Username, user.otp),
     });
 
     const options = {
