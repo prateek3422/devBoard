@@ -38,8 +38,7 @@ const getAllBlogs = asyncHandler(
       {
         $match: userId
           ? {
-              //@ts-ignore
-              author: new mongoose.Types.ObjectId(userId),
+              author: new mongoose.Types.ObjectId(userId as string),
             }
           : {},
       },
@@ -239,6 +238,7 @@ const getBlogById = asyncHandler(
 const createBlog = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { title, content, tags } = createBlogSchema.parse(req.body);
+
     const files = req.files as { [key: string]: Express.Multer.File[] };
     const Slug =
       slugify(title, { lower: true }) +
@@ -279,7 +279,7 @@ const createBlog = asyncHandler(
 const updateBlog = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { blogId } = req.params;
-    // console.log(blogId)
+
     const { name, title, content } = updateBlogSchema.parse(req.body);
     if (!blogId) {
       return next(new ApiError(400, "blogId is required"));

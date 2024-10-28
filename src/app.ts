@@ -11,7 +11,6 @@ import {
   AnswerRoutes,
   LikeRouter,
   CommentRoutes,
-  LinkRouter,
 } from "./routes";
 
 import { LeaderBoardRouter } from "./routes/LeaderBoard.routes";
@@ -33,7 +32,7 @@ app.use(urlencoded({ extended: true, limit: "1mb" }));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000"],
     credentials: true,
     optionsSuccessStatus: 204,
     preflightContinue: true,
@@ -50,7 +49,6 @@ app.use("/api/v1/Questions", QuestionRoutes);
 app.use("/api/v1/Answers", AnswerRoutes);
 app.use("/api/v1/Likes", LikeRouter);
 app.use("/api/v1/Comments", CommentRoutes);
-app.use("/api/v1/Links", LinkRouter);
 app.use("/api/v1/LeaderBoards", LeaderBoardRouter);
 
 app.use(errorHandler);

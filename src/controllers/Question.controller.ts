@@ -81,6 +81,22 @@ const getAllQuestion = asyncHandler(
 
       {
         $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "question",
+          as: "like",
+        },
+      },
+      {
+        $lookup: {
+          from: "answers",
+          localField: "_id",
+          foreignField: "question",
+          as: "answer",
+        },
+      },
+      {
+        $lookup: {
           from: "tags",
           localField: "tags",
           foreignField: "_id",
@@ -110,6 +126,8 @@ const getAllQuestion = asyncHandler(
               url: 1,
             },
           },
+          answer: 1,
+          like: 1,
           createdAt: 1,
           updatedAt: 1,
         },

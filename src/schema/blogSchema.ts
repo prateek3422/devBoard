@@ -4,10 +4,10 @@ export const createBlogSchema = z.object({
   title: z
     .string({ required_error: "title required true" })
     .min(3, { message: "title must be 3 charector" })
-    .max(50, { message: "title is too log" }),
+    .max(300, { message: "title is too log" }),
   content: z
     .string({ required_error: "content required true" })
-    .min(200, { message: "content must be 3 charector" }),
+    .min(200, { message: "content must be 200 charector" }),
   tags: z.array(z.string({ required_error: "tags required true" })),
 });
 
