@@ -51,8 +51,9 @@ const getAllBlogs = asyncHandler(
           pipeline: [
             {
               $project: {
-                fullname: 1,
-                username: 1,
+                _id: 1,
+                Fullname: 1,
+                Username: 1,
                 avatar: 1,
                 creadit: 1,
               },

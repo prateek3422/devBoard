@@ -3,26 +3,22 @@ import { User } from "../models/Auth.models";
 
 import { ApiResponse } from "../utils";
 
+const getleaderBoardOnday = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { limit = 10, page = 1 } = req.params;
 
-const getleaderBoardOnday = async (req: Request, res: Response, next: NextFunction) => {
+  const leader = await User.find()
+    .limit(limit as number)
+    .sort({ credit: -1 })
+    .skip(((page as number) - 1) * (limit as number))
+    .select(
+      "-password -role -createdAt -updatedAt -isVerified -otp -token -phone -LoginType -creadit -isEmailVerified"
+    );
 
-    const leader = await User.aggregate([
-        {
-            $match: {}
-        },
-
-
-        {
-            $sort: {
-                creadit: -1
-            }
-        },
-        {
-            $limit: 10
-        },
-    ])
-
-    res.status(200).json(new ApiResponse(200, leader, "success"));
+  res.status(200).json(new ApiResponse(200, leader, "success"));
 };
 
 export { getleaderBoardOnday };

@@ -368,6 +368,7 @@ const countCredit = asyncHandler(
           _id: new mongoose.Types.ObjectId(req.user?._id),
         },
       },
+
       {
         $lookup: {
           from: "blogs",
@@ -458,7 +459,10 @@ const countCredit = asyncHandler(
       "-password -refreshToken"
     );
 
-    //@ts-ignore
+    if (!user) {
+      return next(new ApiError(404, "user not found"));
+    }
+
     user.creadit = creadit[0].creadit?.totalCreadit;
 
     user?.save({ validateBeforeSave: false });

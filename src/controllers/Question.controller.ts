@@ -194,6 +194,39 @@ const getQuestionById = asyncHandler(
           localField: "_id",
           foreignField: "question",
           as: "answer",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+              },
+            },
+            {
+              $addFields: {
+                owner: {
+                  $first: "$owner",
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                answer: 1,
+                owner: {
+                  _id: 1,
+                  Fullname: 1,
+                  Username: 1,
+                  avatar: {
+                    url: 1,
+                  },
+                },
+                createdAt: 1,
+                updatedAt: 1,
+              },
+            },
+          ],
         },
       },
 
@@ -216,8 +249,8 @@ const getQuestionById = asyncHandler(
           },
           like: 1,
           owner: {
-            fullname: 1,
-            username: 1,
+            Fullname: 1,
+            Username: 1,
             avatar: {
               url: 1,
             },
