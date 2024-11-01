@@ -15,6 +15,8 @@ import {
   verifyEmail,
   verifyForgotPassword,
 } from "../controllers";
+import passport from "passport";
+import "../utils/passport";
 
 const router = Router();
 
@@ -40,5 +42,16 @@ router
 router.route("/delete-user").delete(jwtVerify, deleteUser);
 
 router.route("/creadit").get(jwtVerify, countCredit);
+
+// sso Routes
+router.route("/google").get(
+  passport.authenticate(
+    "google",
+    { scope: ["email", "profile"] },
+    (req, res) => {
+      res.send("redirected to google...");
+    }
+  )
+);
 
 export { router as AuthRouter };

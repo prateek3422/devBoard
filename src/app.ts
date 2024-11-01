@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
+import session from "express-session";
 import {
   AuthRouter,
   BlogRouter,
@@ -14,16 +15,27 @@ import {
 } from "./routes";
 
 import { LeaderBoardRouter } from "./routes/LeaderBoard.routes";
-
+import "./utils/passport";
 const app: Express = express();
-
+import passport from "passport";
 declare global {
   namespace Express {
     interface Request {
-      user?: any; // Define the type of user appropriately
+      user?: User; // Define the type of user appropriately
     }
   }
 }
+
+// passport middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // * middleware
 app.use(express.static("public"));
@@ -41,7 +53,7 @@ app.use(
 app.use(helmet());
 app.use(cookieParser());
 
-// TODO routes
+//* routes
 app.use("/api/v1/users", AuthRouter);
 app.use("/api/v1/Blogs", BlogRouter);
 app.use("/api/v1/Tags", TagRouter);
