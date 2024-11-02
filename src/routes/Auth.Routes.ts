@@ -8,6 +8,7 @@ import {
   deleteUser,
   forgotPassword,
   getCurrentUser,
+  handleSocilaLogin,
   resendEmail,
   signinUser,
   signOutUser,
@@ -44,14 +45,17 @@ router.route("/delete-user").delete(jwtVerify, deleteUser);
 router.route("/creadit").get(jwtVerify, countCredit);
 
 // sso Routes
-router.route("/google").get(
-  passport.authenticate(
-    "google",
-    { scope: ["email", "profile"] },
+router
+  .route("/google")
+  .get(
+    passport.authenticate("google", { scope: ["profile", "email"] }),
     (req, res) => {
-      res.send("redirected to google...");
+      res.send("redirecting to google...");
     }
-  )
-);
+  );
+
+router
+  .route("/google/callback")
+  .get(passport.authenticate("google"), handleSocilaLogin);
 
 export { router as AuthRouter };

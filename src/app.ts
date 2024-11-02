@@ -15,16 +15,17 @@ import {
 } from "./routes";
 
 import { LeaderBoardRouter } from "./routes/LeaderBoard.routes";
-import "./utils/passport";
+
 const app: Express = express();
 import passport from "passport";
-declare global {
-  namespace Express {
-    interface Request {
-      user?: User; // Define the type of user appropriately
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+
+//     interface Request {
+//       user: any; // Define the type of user appropriately
+//     }
+//   }
+// }
 
 // passport middleware
 app.use(
@@ -44,7 +45,7 @@ app.use(urlencoded({ extended: true, limit: "1mb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.CORS_PORT as string],
+    origin: ["http://localhost:3000"],
     credentials: true,
     optionsSuccessStatus: 204,
     preflightContinue: true,

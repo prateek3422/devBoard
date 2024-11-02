@@ -245,8 +245,34 @@ const signinUser = asyncHandler(
   }
 );
 
+const handleSocilaLogin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      return next(new ApiError(404, "user not found"));
+    }
+
+    const { accessToken, refreshToken } = await genrateAccessAndRefreshToken(
+      user.id
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(301)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .redirect(`${process.env.CLIENT_REDIRECT_URL}}`);
+  }
+);
+
 const getCurrentUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
     const user = await User.findById(req.user?._id).select(
       "-password -refreshToken"
     );
@@ -259,6 +285,7 @@ const getCurrentUser = asyncHandler(
 const signOutUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     await User.findByIdAndUpdate(
+      //@ts-ignore
       req.user?._id,
       {
         $unset: {
@@ -365,6 +392,7 @@ const countCredit = asyncHandler(
     const creadit = await User.aggregate([
       {
         $match: {
+          //@ts-ignore
           _id: new mongoose.Types.ObjectId(req.user?._id),
         },
       },
@@ -455,6 +483,7 @@ const countCredit = asyncHandler(
       },
     ]);
 
+    //@ts-ignore
     const user = await User.findById(req.user?._id).select(
       "-password -refreshToken"
     );
@@ -476,7 +505,7 @@ const countCredit = asyncHandler(
 const changePassword = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { oldPassword, newPassword } = changePasswordSchema.parse(req.body);
-
+    //@ts-ignore
     const user = await User.findById(req.user?._id);
 
     const isMatchPassword = await user?.checkPassword(oldPassword);
@@ -501,6 +530,7 @@ const changePassword = asyncHandler(
 const updateUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { fullname } = updateUserSchema.parse(req.body);
+    //@ts-ignore
     const user = await User.findById(req.user?._id);
 
     if (!user) {
@@ -522,6 +552,7 @@ const updateUser = asyncHandler(
     }
 
     const updated = await User.findByIdAndUpdate(
+      //@ts-ignore
       req.user?._id,
       {
         fullname,
@@ -543,11 +574,12 @@ const updateUser = asyncHandler(
 
 const deleteUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
     const user = await User.findById(req.user?._id);
 
     //@ts-ignore
     deleteFromCloudinary(user?.avatar?.public_id);
-
+    //@ts-ignore
     await User.findByIdAndDelete(req.user?._id);
     return res
       .status(200)
@@ -568,4 +600,5 @@ export {
   updateUser,
   deleteUser,
   countCredit,
+  handleSocilaLogin,
 };

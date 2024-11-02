@@ -11,6 +11,7 @@ const createAnswer = asyncHandler(
     const answers = await Answer.create({
       answer,
       question: questionId,
+      // @ts-ignore
       owner: req.user?._id,
     });
     if (!answers) {

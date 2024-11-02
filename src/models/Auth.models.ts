@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 interface Iuser extends Document {
+  _id: string;
   Fullname: string;
   Username: string;
   avatar: object;

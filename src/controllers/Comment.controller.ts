@@ -23,6 +23,7 @@ const AddBlogComment = asyncHandler(
     const comment = await Comment.create({
       content,
       blog: BlogId,
+      // @ts-ignore
       owner: req.user.id,
     });
     if (!comment) {
@@ -52,6 +53,7 @@ const AddQuestionComment = asyncHandler(
     const comment = await Comment.create({
       content,
       question: QuestionId,
+      // @ts-ignore
       owner: req.user.id,
     });
 
@@ -84,6 +86,7 @@ const AddAnswerComment = asyncHandler(
     const comment = await Comment.create({
       content,
       answer: AnswerId,
+      // @ts-ignore
       owner: req.user.id,
     });
 

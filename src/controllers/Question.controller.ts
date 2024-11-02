@@ -19,6 +19,7 @@ const createQuestion = asyncHandler(
       slug,
       question,
       tags,
+      // @ts-ignore
       owner: req.user?._id,
     });
     if (!questions) {

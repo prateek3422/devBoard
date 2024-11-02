@@ -266,6 +266,8 @@ const createBlog = asyncHandler(
         public_id: uploadImage.public_id,
       },
       tags: tags || [],
+
+      //@ts-ignore
       author: req.user?._id,
     });
 

@@ -13,6 +13,7 @@ try {
     try {
       const user = User.findById(id);
       if (user) {
+        //@ts-ignore
         next(null, user);
       } else {
         next(new ApiError(404, "User not found"), null);
@@ -37,6 +38,7 @@ try {
           if (isUserExist.LoginType !== "google") {
             next(new ApiError(400, "You have previously registered using "));
           } else {
+            //@ts-ignore
             next(null, isUserExist);
           }
         } else {
@@ -44,17 +46,20 @@ try {
             Fullname: profile._json.name,
             Username: profile._json.name,
             email: profile._json.email,
+            password: profile._json.sub,
             avatar: {
               url: profile._json.picture,
               public_id: "",
             },
-            LoginType: "google",
-            isEmailVerified: true,
+            LoginType: profile.provider,
+            isEmailVerified: profile._json.email_verified,
             role: "user",
           });
 
+          //@ts-ignore
           next(null, newUser);
           if (newUser) {
+            //@ts-ignore
             return next(null, newUser);
           } else {
             return next(new ApiError(500, "Error creating user"));

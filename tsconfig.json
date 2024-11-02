@@ -1,15 +1,15 @@
 {
-    "compilerOptions": {
-      "strict": true,
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "noImplicitAny": true,
-      "sourceMap": true,
-      "removeComments": true,
-      "rootDir": "src",
-      "outDir": "dist"
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "strict": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
