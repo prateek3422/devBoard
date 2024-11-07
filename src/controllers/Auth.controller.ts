@@ -266,7 +266,7 @@ const handleSocilaLogin = asyncHandler(
       .status(301)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
-      .redirect(`${process.env.CLIENT_REDIRECT_URL}}`);
+      .redirect(`${process.env.CLIENT_REDIRECT_URL}`);
   }
 );
 

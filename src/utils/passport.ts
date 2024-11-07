@@ -5,8 +5,8 @@ import { User } from "../models/Auth.models";
 import { ApiError } from "./ApiError";
 
 try {
-  passport.serializeUser((user: any, done) => {
-    done(null, user.id);
+  passport.serializeUser((user: any, next) => {
+    next(null, user.id);
   });
 
   passport.deserializeUser((id, next) => {
@@ -31,7 +31,6 @@ try {
         callbackURL: process.env.GOOGLE_REDIRECT_URI as string,
       },
       async (accessToken, refreshToken, profile, next) => {
-        console.log(profile);
         const isUserExist = await User.findOne({ email: profile._json.email });
 
         if (isUserExist) {
@@ -56,8 +55,6 @@ try {
             role: "user",
           });
 
-          //@ts-ignore
-          next(null, newUser);
           if (newUser) {
             //@ts-ignore
             return next(null, newUser);
