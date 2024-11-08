@@ -7,7 +7,7 @@ export const createBlogSchema = z.object({
     .max(300, { message: "title is too log" }),
   content: z
     .string({ required_error: "content required true" })
-    .min(200, { message: "content must be 200 charector" }),
+    .min(10000, { message: "content must be 10000 charector" }),
   tags: z.array(z.string({ required_error: "tags required true" })),
 });
 

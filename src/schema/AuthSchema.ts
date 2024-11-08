@@ -65,7 +65,7 @@ export const changePasswordSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  fullname: z
+  Fullname: z
     .string({ required_error: "name required true" })
     .min(3, { message: "fullname must be 3 chare" }),
 });

@@ -53,6 +53,14 @@ const getAllQuestion = asyncHandler(
             }
           : {},
       },
+
+      {
+        $match: userId
+          ? {
+              author: new mongoose.Types.ObjectId(userId as string),
+            }
+          : {},
+      },
       {
         $sort: {
           [shortBy as string]: shortType === "asc" ? 1 : -1,
@@ -64,13 +72,7 @@ const getAllQuestion = asyncHandler(
       {
         $limit: parseInt(limit as string),
       },
-      {
-        $match: userId
-          ? {
-              author: new mongoose.Types.ObjectId(userId as string),
-            }
-          : {},
-      },
+
       {
         $lookup: {
           from: "users",

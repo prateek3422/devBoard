@@ -527,9 +527,8 @@ const changePassword = asyncHandler(
   }
 );
 
-const updateUser = asyncHandler(
+const updateAvatar = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { fullname } = updateUserSchema.parse(req.body);
     //@ts-ignore
     const user = await User.findById(req.user?._id);
 
@@ -537,8 +536,25 @@ const updateUser = asyncHandler(
       return next(new ApiError(404, "user not found"));
     }
 
-    // @ts-ignore
-    await deleteFromCloudinary(user?.avatar.public_id);
+    //@ts-ignore
+    if (user.avatar.public_id !== "") {
+      // @ts-ignore
+      await deleteFromCloudinary(user?.avatar.public_id);
+    } else {
+      await User.findByIdAndUpdate(
+        //@ts-ignore
+        req.user?._id,
+        {
+          avatar: {
+            url: "",
+            public_id: "",
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
 
     const files = req.files as {
       [key: string]: Express.Multer.File[];
@@ -551,15 +567,39 @@ const updateUser = asyncHandler(
       return next(new ApiError(400, "avatar upload failed"));
     }
 
+    const avatar = await User.findByIdAndUpdate(
+      //@ts-ignore
+      req.user?._id,
+      {
+        avatar: {
+          url: uploadAvatar?.url,
+          public_id: uploadAvatar?.public_id,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!avatar) {
+      return next(new ApiError(400, "avatar upload failed"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, avatar, "avatar update successfully"));
+  }
+);
+
+const updateUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { Fullname } = updateUserSchema.parse(req.body);
+
     const updated = await User.findByIdAndUpdate(
       //@ts-ignore
       req.user?._id,
       {
-        fullname,
-        avatar: {
-          url: uploadAvatar.url,
-          public_id: uploadAvatar.public_id,
-        },
+        Fullname: Fullname,
       },
       {
         new: true,
@@ -598,6 +638,7 @@ export {
   forgotPassword,
   changePassword,
   updateUser,
+  updateAvatar,
   deleteUser,
   countCredit,
   handleSocilaLogin,

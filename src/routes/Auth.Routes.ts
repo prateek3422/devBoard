@@ -1,5 +1,4 @@
 import Router from "express";
-
 import { jwtVerify, upload } from "../middleware";
 import {
   changePassword,
@@ -12,6 +11,7 @@ import {
   resendEmail,
   signinUser,
   signOutUser,
+  updateAvatar,
   updateUser,
   verifyEmail,
   verifyForgotPassword,
@@ -33,13 +33,15 @@ router.route("/resend-email").post(resendEmail);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/verify-forgot-password").post(verifyForgotPassword);
 router.route("/change-password").post(jwtVerify, changePassword);
+router.route("/update-user").patch(jwtVerify, updateUser);
 router
-  .route("/update-user")
+  .route("/Avatar")
   .patch(
     upload.fields([{ name: "avatar", maxCount: 1 }]),
     jwtVerify,
-    updateUser
+    updateAvatar
   );
+
 router.route("/delete-user").delete(jwtVerify, deleteUser);
 
 router.route("/creadit").get(jwtVerify, countCredit);
