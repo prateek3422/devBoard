@@ -46,7 +46,7 @@ app.use(urlencoded({ extended: true, limit: "1mb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://devwave.prateekdev.me"],
     credentials: true,
     optionsSuccessStatus: 204,
     preflightContinue: true,
