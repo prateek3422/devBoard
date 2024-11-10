@@ -1,3 +1,6 @@
+// require("newrelic");
+import "newrelic";
+
 import dotenv from "dotenv";
 dotenv.config({});
 

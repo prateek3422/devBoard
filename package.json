@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only   ./src/index.ts",
     "lint": "tsc",
     "build": "tsc -p tsconfig.json",
     "start": "ts-node ./dist/index.js"
@@ -44,6 +44,7 @@
     "mongoose": "^8.3.4",
     "mongoose-aggregate-paginate-v2": "^1.0.7",
     "multer": "1.4.5-lts.1",
+    "newrelic": "^12.6.1",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
     "passport": "^0.7.0",
