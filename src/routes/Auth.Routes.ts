@@ -16,7 +16,7 @@ import {
   verifyEmail,
   verifyForgotPassword,
 } from "../controllers";
-import passport from "passport";
+import passport, { Passport } from "passport";
 import "../utils/passport";
 
 const router = Router();
@@ -56,8 +56,20 @@ router
     }
   );
 
+router.route("/github").get(
+  passport.authenticate("github", {
+    scope: ["profile", "email"],
+  }),
+  (req, res) => {
+    res.send("redirect to github...");
+  }
+);
+
 router
   .route("/google/callback")
   .get(passport.authenticate("google"), handleSocilaLogin);
 
+router
+  .route("/github/callback")
+  .get(passport.authenticate("github", handleSocilaLogin));
 export { router as AuthRouter };
