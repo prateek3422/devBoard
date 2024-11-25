@@ -100,9 +100,9 @@ const getAllBlogs = asyncHandler(
           image: {
             url: 1,
           },
-          tags: {
-            name: 1,
-          },
+            tags:{
+              name:1
+            },
           isPublic: 1,
           author: 1,
           createdAt: 1,
@@ -238,7 +238,9 @@ const getBlogById = asyncHandler(
 );
 const createBlog = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+
     const { title, content, tags } = createBlogSchema.parse(req.body);
+
 
     const files = req.files as { [key: string]: Express.Multer.File[] };
     const Slug =
@@ -265,7 +267,7 @@ const createBlog = asyncHandler(
         url: uploadImage.url,
         public_id: uploadImage.public_id,
       },
-      tags: tags || [],
+      tags: tags ,
 
       //@ts-ignore
       author: req.user?._id,
@@ -292,7 +294,7 @@ const updateBlog = asyncHandler(
 
     //* add image and remove image
     //@ts-ignore
-    deleteFromCloudinary(blog?.image?.public_id);
+    await deleteFromCloudinary(blog?.image?.public_id);
     const files = req.files as { [key: string]: Express.Multer.File[] };
     const image = files.image[0]?.path;
 
@@ -341,7 +343,7 @@ const DeleteBlogs = asyncHandler(
       return next(new ApiError(400, "blog not found"));
     }
     //@ts-ignore
-    deleteFromCloudinary(blog.image?.public_id);
+    await deleteFromCloudinary(blog.image?.public_id);
 
     const deleteBlog = await Blog.findByIdAndDelete(blogId);
 
