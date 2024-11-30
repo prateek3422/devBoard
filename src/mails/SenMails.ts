@@ -18,8 +18,8 @@ const sendEmail = async ({ email, subject, MailgenContent }: Imail) => {
     },
   });
 
-  var emailBody = mailGenerator.generate(MailgenContent);
-  var emailText = mailGenerator.generatePlaintext(MailgenContent);
+  let emailBody = mailGenerator.generate(MailgenContent);
+  let emailText = mailGenerator.generatePlaintext(MailgenContent);
 
 
 

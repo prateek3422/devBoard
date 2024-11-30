@@ -112,12 +112,14 @@ const createUser = asyncHandler(
 
     const options = {
       httpOnly: true,
+        sameSite: "none" as const,
       secure: true,
       maxAge: 1000 * 60 * 60,
     };
 
     res
       .status(200)
+  
       .cookie("verifyUser", token, options)
       .json(new ApiResponse(200, {}, "user registerd successfully"));
   }
@@ -156,6 +158,7 @@ const verifyEmail = asyncHandler(
 
     const options = {
       httpOnly: true,
+       
       secure: true,
       maxAge: 1000 * 60 * 60,
     };
@@ -186,19 +189,22 @@ const resendEmail = asyncHandler(
 
     await user.save({ validateBeforeSave: false });
 
-    sendEmail({
-      email: user.email,
-      subject: "Email verification",
-      MailgenContent: SendEmailVerification(user.Username, user.otp),
+    await sendEmail({
+        email: user.email,
+        subject: "Email verification",
+        MailgenContent: SendEmailVerification(user.Username, user.otp),
     });
 
     const options = {
       httpOnly: true,
+        sameSite: "none",
       secure: true,
-      maxAge: 1000 * 60 * 60,
+        maxAge: 1000 * 60 * 60,
     };
-    return res
+   
+      return res
       .status(204)
+          //@ts-ignore
       .cookie("verifyUser", token, options)
       .json(new ApiResponse(200, {}, "email resend successfully"));
   }
@@ -234,6 +240,7 @@ const signinUser = asyncHandler(
 
     const options = {
       httpOnly: true,
+      sameSite: "none" as const,
       secure: true,
     };
 
@@ -259,6 +266,7 @@ const handleSocilaLogin = asyncHandler(
 
     const options = {
       httpOnly: true,
+        sameSite:"none" as const,
       secure: true,
     };
 
@@ -299,6 +307,7 @@ const signOutUser = asyncHandler(
 
     const options = {
       httpOnly: true,
+        sameSite:"none" as const,
       secure: true,
     };
 
@@ -377,6 +386,7 @@ const verifyForgotPassword = asyncHandler(
 
     const options = {
       httpOnly: true,
+        sameSite: "none" as const,
       secure: true,
       maxAge: 1000 * 60 * 60,
     };
