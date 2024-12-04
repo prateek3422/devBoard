@@ -4,11 +4,11 @@ export const registerSchema = z.object({
   Fullname: z
     .string({ required_error: "name required true" })
     .min(3, { message: "fullname must be 3 charector" })
-    .max(20, { message: "full name is too log" }),
+    .max(50, { message: "full name is too log" }),
   Username: z
     .string({ required_error: "user name is required" })
     .min(3, { message: "usename must be 3 charector" })
-    .max(10, "username is too long"),
+    .max(50, "username is too long"),
   email: z
     .string({ required_error: "email is required" })
     .email({ message: "email is invalid" }),

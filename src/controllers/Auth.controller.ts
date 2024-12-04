@@ -53,7 +53,7 @@ const createUser = asyncHandler(
     const isEmail = await User.findOne({ $or: [{ email }, { Username }] });
 
     if (isEmail) {
-      throw new ApiError(400, "Account already exists");
+      return next(new ApiError(400, "email or username already exist"));
     }
 
     let uploadAvatar = {
@@ -281,9 +281,86 @@ const handleSocilaLogin = asyncHandler(
 const getCurrentUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     //@ts-ignore
-    const user = await User.findById(req.user?._id).select(
-      "-password -refreshToken"
-    );
+    const user = await User.aggregate([
+      {
+        //@ts-ignore
+        $match: {_id: new mongoose.Types.ObjectId(req.user?._id)},
+      },
+      {
+        $lookup:{
+          from:"blogs",
+          localField:"_id",
+          foreignField:"author",
+          as:"blogs",
+        }
+
+      },
+      {
+        $lookup:{
+          from:"likes",
+          localField:"_id",
+          foreignField:"author",
+          as:"likes",
+        }
+      },
+      {
+        $lookup:{
+          from:"questions",
+          localField:"_id",
+          foreignField:"owner",
+          as:"questions",
+          pipeline:[
+            {
+              
+              $lookup:{
+                from:"likes",
+                localField:"_id",
+                foreignField:"question",
+                as:"likes",
+              }
+            }
+          ]
+        }
+      },
+      {
+        $lookup:{
+          from:"answers",
+          localField:"_id",
+          foreignField:"owner",
+          as:"answers",
+        }
+      },
+      {
+        $addFields:{
+          totalBlogs:{
+            $size:"$blogs"
+          },
+      
+          totalLikes:{
+            $size:"$likes"
+          },
+          totalQuestions:{
+            $size:"$questions"
+          }
+    
+        }
+      },
+      {
+        $project:{
+          _id:1,
+          Fullname:1,
+          Username:1,
+          creadit:1,
+          email:1,
+          avatar:1,
+          totalBlogs:1,
+          totalLikes:1,
+          totalQuestions:1
+        }
+      }
+    ])
+
+    console.log(user);
     return res
       .status(200)
       .json(new ApiResponse(200, user, "signout successfully"));

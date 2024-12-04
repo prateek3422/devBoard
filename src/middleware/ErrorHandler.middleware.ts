@@ -8,19 +8,20 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  err.statusCode ||= 500;
-  err.message ||= "Internal Server Error";
+  if (res.headersSent) {
+    return next(err);
+  }
 
   if (err instanceof ZodError) {
     res.status(400).json({
       success: false,
-      message: "Validation Error",
-      errors: err.errors.map((error) => error.message),
+      message: err.errors.map((error) => error.message)
+
     });
   }
-  res.status(err.statusCode).json({
+  res.status(err.statusCode || 500).json({
     success: false,
-    message: err.message,
+    message: err.message || 'Internal Server Error',
   });
 };
 
