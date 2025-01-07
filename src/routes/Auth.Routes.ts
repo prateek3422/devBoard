@@ -16,7 +16,7 @@ import {
   verifyEmail,
   verifyForgotPassword,
 } from "../controllers";
-import passport, { Passport } from "passport";
+import passport from "passport";
 import "../utils/passport";
 
 const router = Router();
