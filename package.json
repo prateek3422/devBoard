@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only   ./src/index.ts",
     "lint": "tsc",
-    "build": "tsc -p tsconfig.json",
+    "build": "node --max-old-space-size=4096 ./node_modules/.bin/tsc -p tsconfig.json",
     "start": "ts-node ./dist/index.js"
   },
   "keywords": [],
